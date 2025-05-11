@@ -4,6 +4,17 @@
 Xây dựng một hệ thống trực quan hóa và so sánh các thuật toán AI giải bài toán 8-puzzle, bao gồm các nhóm thuật toán tìm kiếm, ràng buộc, học tăng cường và môi trường phức tạp. Dự án giúp sinh viên hiểu rõ bản chất, hiệu suất và ứng dụng của từng thuật toán thông qua giao diện trực quan và các phép đo hiệu suất.
 
 ---
+## Điều hướng nhanh
+- [Thành phần chính của bài toán tìm kiếm](#1-thành-phần-chính-của-bài-toán-tìm-kiếm)
+- [Uninformed Search Algorithms](#21-uninformed-search-algorithms)
+- [Informed Search Algorithms](#22-informed-search-algorithms)
+- [Local Search Algorithms](#23-local-search-algorithms)
+- [Complex Environment Search](#24-complex-environment-search)
+- [Constraint Satisfaction Problems](#25-constraint-satisfaction-problems-csps)
+- [Reinforcement Learning](#26-reinforcement-learning)
+- [Kết luận](#3-kết-luận)
+
+---
 
 ## Nội dung
 
@@ -75,8 +86,8 @@ Kết hợp A* với iterative deepening, tiết kiệm bộ nhớ hơn A*.
 
 **GIF minh họa:**  
 ![Greedy Demo](assets/greedy.gif)  
-![A* Demo](assets/astar.gif)  
-![IDA* Demo](assets/idastar.gif)
+![A* Demo](assets/a_star.gif)  
+![IDA* Demo](assets/ida.gif)
 
 **So sánh hiệu suất:**  
 ![Informed Comparison](assets/informed_compare.png)
@@ -104,7 +115,7 @@ Duy trì một số lượng trạng thái tốt nhất tại mỗi bước (bea
 Sử dụng quần thể, lai ghép, đột biến để tiến hóa lời giải.
 
 **GIF minh họa:**  
-![Hill Climbing Demo](assets/hc.gif)  
+![Hill Climbing Demo](assets/simplehc.gif)  
 ![Simulated Annealing Demo](assets/sa.gif)  
 ![Beam Search Demo](assets/beam.gif)  
 ![Genetic Algorithm Demo](assets/genetic.gif)
@@ -129,8 +140,8 @@ Mô hình hóa trạng thái tin tưởng (tập hợp các trạng thái có th
 Mô phỏng môi trường chỉ quan sát được một phần trạng thái, tăng độ khó cho bài toán.
 
 **GIF minh họa:**  
-![AND-OR Demo](assets/andor.gif)  
-![Belief State Demo](assets/belief.gif)  
+![AND-OR Demo](assets/and_or.gif)  
+![Belief State Demo](assets/belief_states.gif)  
 ![PO Demo](assets/po.gif)
 
 **So sánh hiệu suất:**  
@@ -153,7 +164,9 @@ Kết hợp backtracking với kiểm tra trước miền giá trị khả thi, 
 
 **GIF minh họa:**  
 ![Min-Conflicts Demo](assets/mc.gif)  
-![Backtracking Demo](assets/back.gif)
+![Recursive Backtracking Demo](assets/re_backtracking.gif)
+![Backtracking with Forward Checking Demo](assets/fc_backtrack.gif)
+
 
 **So sánh hiệu suất:**  
 ![CSP Comparison](assets/csp_compare.png)
@@ -171,7 +184,7 @@ Học chính sách giải quyết bài toán thông qua thử nghiệm và phầ
 Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nhật dần qua các tập huấn luyện.
 
 **GIF minh họa:**  
-![Q-Learning Demo](assets/qlearning.gif)
+![Q-Learning Demo](assets/q_learning.gif)
 
 **So sánh hiệu suất:**  
 ![RL Comparison](assets/rl_compare.png)
@@ -193,17 +206,6 @@ Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nh�
 
 ---
 
-## Điều hướng nhanh
-- [Thành phần chính của bài toán tìm kiếm](#1-thành-phần-chính-của-bài-toán-tìm-kiếm)
-- [Uninformed Search Algorithms](#21-uninformed-search-algorithms)
-- [Informed Search Algorithms](#22-informed-search-algorithms)
-- [Local Search Algorithms](#23-local-search-algorithms)
-- [Complex Environment Search](#24-complex-environment-search)
-- [Constraint Satisfaction Problems](#25-constraint-satisfaction-problems-csps)
-- [Reinforcement Learning](#26-reinforcement-learning)
-- [Kết luận](#3-kết-luận)
-
----
 
 > **Lưu ý:**  
 > Các hình ảnh, GIF minh họa và biểu đồ hiệu suất cần được bổ sung vào thư mục `assets/` để README hiển thị đầy đủ trên GitHub.
