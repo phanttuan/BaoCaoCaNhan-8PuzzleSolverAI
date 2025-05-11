@@ -48,6 +48,10 @@ Ví dụ:  [start_state, state_1, state_2, ..., goal_state]
 ## 2. Các nhóm thuật toán
 
 ### 2.1. Uninformed Search Algorithms
+
+#### Mô tả
+Nhóm thuật toán này không sử dụng bất kỳ thông tin nào về trạng thái đích ngoài việc kiểm tra xem một trạng thái có phải đích hay không.
+
 #### Thuật toán: **BFS, DFS, UCS, ID**
 - **BFS (Breadth-First Search):**  
 Tìm kiếm theo chiều rộng, đảm bảo tìm được lời giải ngắn nhất nhưng tốn nhiều bộ nhớ.
@@ -59,47 +63,62 @@ Tìm kiếm theo chi phí, luôn mở rộng trạng thái có chi phí thấp n
 Kết hợp ưu điểm của DFS và BFS, tăng dần giới hạn độ sâu.
 
 **GIF minh họa:**  
+*Breadth-First Search*
 ![BFS Demo](assets/bfs.gif)  
-![DFS Demo](assets/dfs.gif)  
+*Depth-First Search*
+![DFS Demo](assets/dfs.gif) 
+*Uniform Cost Search*
 ![UCS Demo](assets/ucs.gif)  
+*Iterative Deepening*
 ![ID Demo](assets/id.gif)
 
 **So sánh hiệu suất:**  
 ![Uninformed Comparison](assets/uninformed_compare.png)
 
 **Nhận xét:**  
-- BFS tìm giải pháp ngắn nhất nhưng tốn bộ nhớ.
-- DFS nhanh nhưng không đảm bảo tối ưu và dễ lặp.
-- UCS tối ưu về chi phí nhưng chậm với không gian lớn.
-- ID tiết kiệm bộ nhớ hơn BFS, nhưng vẫn có thể tốn thời gian.
+- **BFS:** Đảm bảo tìm lời giải ngắn nhất nhưng tốn bộ nhớ với không gian trạng thái lớn
+- **DFS:** Tiết kiệm bộ nhớ nhưng có thể rơi vào đường đi vô hạn nếu không có kiểm soát
+- **UCS:** Tối ưu về chi phí, thích hợp khi hành động có chi phí khác nhau
+- **ID:** Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ nhưng vẫn đảm bảo tối ưu
 
 ---
 
 ### 2.2. Informed Search Algorithms
+
+#### Mô tả
+Nhóm thuật toán này sử dụng hàm heuristic để đánh giá khoảng cách từ trạng thái hiện tại đến trạng thái đích, giúp tìm kiếm hiệu quả hơn.
+
 #### Thuật toán: **Greedy, A*, IDA***
 - **Greedy Best-First Search:**  
 Luôn chọn trạng thái có heuristic (Manhattan distance) nhỏ nhất, nhanh nhưng không đảm bảo tối ưu.
-- **A_Star Search:**  
+- **A* Search:**  
 Kết hợp chi phí thực tế và heuristic, đảm bảo tìm giải pháp tối ưu nếu heuristic chấp nhận được.
-- **IDA_star (Iterative Deepening A_star):**  
+- **IDA* (Iterative Deepening A*):**  
 Kết hợp A* với iterative deepening, tiết kiệm bộ nhớ hơn A*.
 
 **GIF minh họa:**  
+*Greedy Best-First Search:*
 ![Greedy Demo](assets/greedy.gif)  
+*A_Star Search:*
 ![A* Demo](assets/a_star.gif)  
+*IDA_Star (Iterative Deepening A_star):*
 ![IDA* Demo](assets/ida.gif)
 
 **So sánh hiệu suất:**  
 ![Informed Comparison](assets/informed_compare.png)
 
-**Nhận xét:**  
-- A* thường nhanh và tối ưu nhất.
-- Greedy nhanh nhưng không đảm bảo tối ưu.
-- IDA* tiết kiệm bộ nhớ hơn A* nhưng có thể lặp lại nhiều trạng thái.
+#### Nhận xét
+- **Greedy:** Nhanh nhưng không đảm bảo tìm được lời giải tối ưu
+- **A*:** Đảm bảo tìm được lời giải tối ưu nếu hàm heuristic chấp nhận được
+- **IDA*:** Tiết kiệm bộ nhớ hơn A* nhưng có thể phải kiểm tra lại nhiều trạng thái
 
 ---
 
 ### 2.3. Local Search Algorithms
+
+#### Mô tả
+Các thuật toán này duy trì một hoặc một số trạng thái hiện tại và di chuyển đến các trạng thái lân cận. Thường dùng cho các bài toán tối ưu hóa hơn là tìm đường đi.
+
 #### Thuật toán: **Simple HC, Steepest HC, Stochastic HC, SA, Beam, Genetic**
 - **Simple Hill Climbing:**  
 Luôn chọn trạng thái lân cận tốt hơn hiện tại, dễ kẹt tại cực trị cục bộ.
@@ -115,22 +134,36 @@ Duy trì một số lượng trạng thái tốt nhất tại mỗi bước (bea
 Sử dụng quần thể, lai ghép, đột biến để tiến hóa lời giải.
 
 **GIF minh họa:**  
-![Hill Climbing Demo](assets/simplehc.gif)  
+*Simple Hill Climbing:*
+![Simple Hill Climbing Demo](assets/simplehc.gif)  
+*Steepest Ascent Hill Climbing:*
+![Steepest Ascent Climbing Demo](assets/steepesthc.gif)  
+*Stochastic Hill Climbing:*
+![Stochastic Hill Climbing Demo](assets/stochastichc.gif)  
+*Simulated Annealing:*
 ![Simulated Annealing Demo](assets/sa.gif)  
+*Beam Search:*
 ![Beam Search Demo](assets/beam.gif)  
+*Genetic Algorithm:*
 ![Genetic Algorithm Demo](assets/genetic.gif)
 
 **So sánh hiệu suất:**  
 ![Local Search Comparison](assets/local_compare.png)
 
-**Nhận xét:**  
-- Hill Climbing đơn giản nhưng dễ kẹt.
-- Simulated Annealing và Genetic có thể thoát cực trị cục bộ.
-- Beam Search hiệu quả với beam width phù hợp.
+#### Nhận xét
+- **Hill Climbing:** Đơn giản nhưng dễ mắc kẹt tại cực trị cục bộ
+- **Simulated Annealing:** Có khả năng thoát khỏi cực trị cục bộ, phù hợp với không gian tìm kiếm phức tạp
+- **Beam Search:** Cân bằng giữa tốc độ và khả năng tìm lời giải tốt
+- **Genetic Algorithm:** Mạnh mẽ với không gian tìm kiếm lớn, phức tạp, nhưng tốn nhiều tài nguyên
+
 
 ---
 
 ### 2.4. Complex Environment Search
+
+#### Mô tả
+Nhóm thuật toán này xử lý các bài toán trong môi trường không xác định, quan sát một phần hoặc đa mục tiêu.
+
 #### Thuật toán: **AND-OR, Belief State, PO**
 - **AND-OR Search:**  
 Dùng cho các bài toán có nhiều mục tiêu phụ hoặc môi trường không xác định.
@@ -140,20 +173,29 @@ Mô hình hóa trạng thái tin tưởng (tập hợp các trạng thái có th
 Mô phỏng môi trường chỉ quan sát được một phần trạng thái, tăng độ khó cho bài toán.
 
 **GIF minh họa:**  
+*AND-OR Search:*
 ![AND-OR Demo](assets/and_or.gif)  
+*Belief State:*
 ![Belief State Demo](assets/belief_states.gif)  
+*PO (Partially Observable):*
 ![PO Demo](assets/po.gif)
 
 **So sánh hiệu suất:**  
 ![Complex Env Comparison](assets/complex_compare.png)
 
 **Nhận xét:**  
-- AND-OR phù hợp cho bài toán có nhiều mục tiêu phụ.
-- Belief State và PO mô phỏng tốt môi trường không đầy đủ thông tin, nhưng hiệu suất giảm mạnh khi tỷ lệ quan sát thấp.
+- **AND-OR:** Phù hợp cho bài toán cần đạt nhiều mục tiêu con
+- **Belief State:** Xử lý tốt trường hợp không chắc chắn về trạng thái
+- **PO:** Hiệu suất giảm mạnh khi tỷ lệ quan sát thấp, minh họa thách thức của môi trường thực tế
+
 
 ---
 
 ### 2.5. Constraint Satisfaction Problems (CSPs)
+
+#### Mô tả
+Cách tiếp cận CSP xem 8-puzzle như bài toán gán giá trị cho các biến sao cho thỏa mãn các ràng buộc.
+
 #### Thuật toán: **MC (Min-Conflicts), BACK, BACK-FC**
 - **Min-Conflicts:**  
 Khởi tạo lời giải đầy đủ, sau đó lặp lại chọn biến xung đột và gán giá trị giảm xung đột nhất. Hiệu quả với CSP lớn, nhưng với 8-puzzle có thể kẹt cực trị cục bộ.
@@ -163,8 +205,11 @@ Gán giá trị cho từng biến, quay lui khi gặp xung đột.
 Kết hợp backtracking với kiểm tra trước miền giá trị khả thi, cắt tỉa sớm các nhánh không khả thi.
 
 **GIF minh họa:**  
+*Min-Conflicts:*
 ![Min-Conflicts Demo](assets/mc.gif)  
+*Backtracking:*
 ![Recursive Backtracking Demo](assets/re_backtracking.gif)
+*Backtracking with Forward Checking:*
 ![Backtracking with Forward Checking Demo](assets/fc_backtrack.gif)
 
 
@@ -172,40 +217,53 @@ Kết hợp backtracking với kiểm tra trước miền giá trị khả thi, 
 ![CSP Comparison](assets/csp_compare.png)
 
 **Nhận xét:**  
-- Min-Conflicts hiệu quả với bài toán CSP lớn, nhưng với 8-puzzle có thể kẹt cực trị cục bộ.
-- Backtracking with Forward Checking cắt tỉa tốt hơn backtracking thuần.
+- **Min-Conflicts:** Hiệu quả với CSP lớn, có thể hội tụ nhanh
+- **Backtracking:** Đơn giản nhưng kém hiệu quả với bài toán lớn
+- **Backtracking with Forward Checking:** Cải thiện backtracking bằng cách loại bỏ sớm giá trị không khả thi
 
 ---
 
 ### 2.6. Reinforcement Learning
+
+#### Mô tả
+Phương pháp học từ tương tác với môi trường, thông qua hệ thống thưởng phạt.
+
 #### Thuật toán: **Q-Learning**
 - **Q-Learning:**  
 Học chính sách giải quyết bài toán thông qua thử nghiệm và phần thưởng.  
 Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nhật dần qua các tập huấn luyện.
 
-**GIF minh họa:**  
+**GIF minh họa:** 
+*Q-Learning:* 
 ![Q-Learning Demo](assets/q_learning.gif)
 
 **So sánh hiệu suất:**  
 ![RL Comparison](assets/rl_compare.png)
 
 **Nhận xét:**  
-- Q-Learning cần nhiều tập huấn luyện để hội tụ.
-- Hiệu quả phụ thuộc vào tham số alpha, gamma, epsilon.
+- Cần thời gian huấn luyện dài để hội tụ đến chính sách tối ưu
+- Hiệu quả phụ thuộc vào tham số alpha (tốc độ học), gamma (chiết khấu), và epsilon (khám phá)
+- Có khả năng thích ứng với môi trường thay đổi
 
 ---
 
 ## 3. Kết luận
 
-- Dự án đã trực quan hóa và so sánh hiệu suất của hơn 15 thuật toán AI trên cùng một bài toán 8-puzzle.
-- Các thuật toán heuristic (A*, IDA*) cho kết quả tốt nhất về thời gian và độ dài lời giải.
-- Các thuật toán local search và CSPs minh họa rõ ràng về cực trị cục bộ và vai trò của heuristic.
-- Reinforcement Learning cho thấy tiềm năng nhưng cần nhiều thời gian huấn luyện.
-- Môi trường phức tạp (PO, Belief State) làm tăng độ khó và giảm hiệu suất rõ rệt.
-- Giao diện trực quan giúp sinh viên dễ dàng quan sát, so sánh và hiểu sâu về từng thuật toán.
+
+### Kết quả đạt được
+- Xây dựng thành công hệ thống trình diễn 15+ thuật toán AI trên cùng một bài toán
+- Trực quan hóa quá trình giải quyết của từng thuật toán
+- So sánh khách quan hiệu suất giữa các thuật toán
+
+### Nhận xét tổng quát
+- Thuật toán **A*** cho hiệu quả tốt nhất về cả thời gian và độ dài lời giải
+- Các thuật toán **Local Search** minh họa rõ vấn đề của cực trị cục bộ
+- **Reinforcement Learning** cho thấy tiềm năng học từ tương tác nhưng cần nhiều thời gian
+- **Complex Environment** làm nổi bật thách thức của thế giới thực khi thông tin không đầy đủ
+
+### Hạn chế và hướng phát triển
+- Cải thiện hiệu suất của các thuật toán với bảng kích thước lớn hơn (15-puzzle)
+- Thêm các thuật toán học máy hiện đại hơn như Deep Q-Network
+- Phát triển môi trường mô phỏng thách thức hơn (nhiễu, ràng buộc thời gian thực)
 
 ---
-
-
-> **Lưu ý:**  
-> Các hình ảnh, GIF minh họa và biểu đồ hiệu suất cần được bổ sung vào thư mục `assets/` để README hiển thị đầy đủ trên GitHub.
