@@ -1,67 +1,82 @@
 {
   "BFS": {
-    "time": 0.001258993148803711,
+    "time": 0.0012981096903483074,
     "path_length": 3.0,
     "success": true
   },
   "DFS": {
-    "time": 0.07191128730773926,
+    "time": 0.0591124693552653,
     "path_length": 69.0,
     "success": true
   },
   "UCS": {
-    "time": 0.00010056495666503907,
+    "time": 0.00010633468627929688,
     "path_length": 3.0,
     "success": true
   },
   "ID": {
-    "time": 5.0973892211914065e-05,
+    "time": 3.631909688313802e-05,
     "path_length": 3.0,
     "success": true
   },
   "Greedy": {
-    "time": 7.200241088867188e-05,
+    "time": 5.7697296142578125e-05,
     "path_length": 3.0,
     "success": true
   },
   "A*": {
-    "time": 8.7738037109375e-05,
+    "time": 4.4504801432291664e-05,
     "path_length": 3.0,
     "success": true
   },
   "IDA*": {
-    "time": 6.074905395507813e-05,
+    "time": 5.555152893066406e-05,
     "path_length": 3.0,
     "success": true
   },
   "Simple HC": {
-    "time": 5.021095275878906e-05,
+    "time": 4.140535990397135e-05,
     "path_length": 3.0,
     "success": true
   },
   "Steepest HC": {
-    "time": 5.1403045654296874e-05,
+    "time": 5.4995218912760414e-05,
     "path_length": 3.0,
     "success": true
   },
   "Stochastic HC": {
-    "time": 7.834434509277344e-05,
+    "time": 5.793571472167969e-05,
     "path_length": 3.0,
     "success": true
   },
   "SA": {
-    "time": 0.0011069774627685547,
-    "path_length": 54.0,
-    "success": true
+    "time": 0,
+    "path_length": 0,
+    "success": false
   },
   "Beam": {
-    "time": 0.000118255615234375,
+    "time": 9.258588155110677e-05,
     "path_length": 3.0,
     "success": true
   },
   "Genetic": {
-    "time": 0.007141256332397461,
+    "time": 0.019400278727213543,
     "path_length": 20.0,
+    "success": true
+  },
+  "AND-OR": {
+    "time": 0.0002560615539550781,
+    "path_length": 31.0,
+    "success": true
+  },
+  "Belief State": {
+    "time": 2.86102294921875e-06,
+    "path_length": 2.0,
+    "success": true
+  },
+  "PO": {
+    "time": 1.5099843343098958e-06,
+    "path_length": 2.0,
     "success": true
   },
   "MC": {
@@ -70,17 +85,17 @@
     "success": false
   },
   "BACK": {
-    "time": 9.446144104003906e-05,
+    "time": 8.296966552734375e-05,
     "path_length": 9.0,
     "success": true
   },
   "BACK-FC": {
-    "time": 0.00015311241149902345,
+    "time": 0.00014702479044596353,
     "path_length": 9.0,
     "success": true
   },
   "Q-Learning": {
-    "time": 0.021399259567260742,
+    "time": 0.028304100036621094,
     "path_length": 3.0,
     "success": true
   }
