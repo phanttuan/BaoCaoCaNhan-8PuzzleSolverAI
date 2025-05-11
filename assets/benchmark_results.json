@@ -1,0 +1,87 @@
+{
+  "BFS": {
+    "time": 0.001258993148803711,
+    "path_length": 3.0,
+    "success": true
+  },
+  "DFS": {
+    "time": 0.07191128730773926,
+    "path_length": 69.0,
+    "success": true
+  },
+  "UCS": {
+    "time": 0.00010056495666503907,
+    "path_length": 3.0,
+    "success": true
+  },
+  "ID": {
+    "time": 5.0973892211914065e-05,
+    "path_length": 3.0,
+    "success": true
+  },
+  "Greedy": {
+    "time": 7.200241088867188e-05,
+    "path_length": 3.0,
+    "success": true
+  },
+  "A*": {
+    "time": 8.7738037109375e-05,
+    "path_length": 3.0,
+    "success": true
+  },
+  "IDA*": {
+    "time": 6.074905395507813e-05,
+    "path_length": 3.0,
+    "success": true
+  },
+  "Simple HC": {
+    "time": 5.021095275878906e-05,
+    "path_length": 3.0,
+    "success": true
+  },
+  "Steepest HC": {
+    "time": 5.1403045654296874e-05,
+    "path_length": 3.0,
+    "success": true
+  },
+  "Stochastic HC": {
+    "time": 7.834434509277344e-05,
+    "path_length": 3.0,
+    "success": true
+  },
+  "SA": {
+    "time": 0.0011069774627685547,
+    "path_length": 54.0,
+    "success": true
+  },
+  "Beam": {
+    "time": 0.000118255615234375,
+    "path_length": 3.0,
+    "success": true
+  },
+  "Genetic": {
+    "time": 0.007141256332397461,
+    "path_length": 20.0,
+    "success": true
+  },
+  "MC": {
+    "time": 0,
+    "path_length": 0,
+    "success": false
+  },
+  "BACK": {
+    "time": 9.446144104003906e-05,
+    "path_length": 9.0,
+    "success": true
+  },
+  "BACK-FC": {
+    "time": 0.00015311241149902345,
+    "path_length": 9.0,
+    "success": true
+  },
+  "Q-Learning": {
+    "time": 0.021399259567260742,
+    "path_length": 3.0,
+    "success": true
+  }
+}

@@ -1,5 +1,6 @@
 # 8-Puzzle Solver AI
-
+Sinh viên thực hiện: Phan Việt Tuấn - MSSV: 23110355
+Báo cáo cá nhân bộ môn Trí Tuệ Nhân Tạo
 ## Mục tiêu
 Xây dựng một hệ thống trực quan hóa và so sánh các thuật toán AI giải bài toán 8-puzzle, bao gồm các nhóm thuật toán tìm kiếm, ràng buộc, học tăng cường và môi trường phức tạp. Dự án giúp sinh viên hiểu rõ bản chất, hiệu suất và ứng dụng của từng thuật toán thông qua giao diện trực quan và các phép đo hiệu suất.
 
@@ -72,8 +73,8 @@ Kết hợp ưu điểm của DFS và BFS, tăng dần giới hạn độ sâu.
 *Iterative Deepening*
 ![ID Demo](assets/id.gif)
 
-**So sánh hiệu suất:**  
-![Uninformed Comparison](assets/uninformed_compare.png)
+#### So sánh hiệu suất
+![Uninformed Search Comparison](assets/uninformed_compare.png)
 
 **Nhận xét:**  
 - **BFS:** Đảm bảo tìm lời giải ngắn nhất nhưng tốn bộ nhớ với không gian trạng thái lớn
@@ -88,7 +89,7 @@ Kết hợp ưu điểm của DFS và BFS, tăng dần giới hạn độ sâu.
 #### Mô tả
 Nhóm thuật toán này sử dụng hàm heuristic để đánh giá khoảng cách từ trạng thái hiện tại đến trạng thái đích, giúp tìm kiếm hiệu quả hơn.
 
-#### Thuật toán: **Greedy, A*, IDA***
+#### Thuật toán: **Greedy, A*, IDA*.**
 - **Greedy Best-First Search:**  
 Luôn chọn trạng thái có heuristic (Manhattan distance) nhỏ nhất, nhanh nhưng không đảm bảo tối ưu.
 - **A* Search:**  
@@ -104,8 +105,8 @@ Kết hợp A* với iterative deepening, tiết kiệm bộ nhớ hơn A*.
 *IDA_Star (Iterative Deepening A_star):*
 ![IDA* Demo](assets/ida.gif)
 
-**So sánh hiệu suất:**  
-![Informed Comparison](assets/informed_compare.png)
+#### So sánh hiệu suất
+![Informed Search Comparison](assets/informed_compare.png)
 
 #### Nhận xét
 - **Greedy:** Nhanh nhưng không đảm bảo tìm được lời giải tối ưu
@@ -147,7 +148,7 @@ Sử dụng quần thể, lai ghép, đột biến để tiến hóa lời giả
 *Genetic Algorithm:*
 ![Genetic Algorithm Demo](assets/genetic.gif)
 
-**So sánh hiệu suất:**  
+#### So sánh hiệu suất
 ![Local Search Comparison](assets/local_compare.png)
 
 #### Nhận xét
@@ -180,8 +181,8 @@ Mô phỏng môi trường chỉ quan sát được một phần trạng thái, 
 *PO (Partially Observable):*
 ![PO Demo](assets/po.gif)
 
-**So sánh hiệu suất:**  
-![Complex Env Comparison](assets/complex_compare.png)
+#### So sánh hiệu suất
+![Complex Environment Comparison](assets/complex_compare.png)
 
 **Nhận xét:**  
 - **AND-OR:** Phù hợp cho bài toán cần đạt nhiều mục tiêu con
@@ -213,7 +214,7 @@ Kết hợp backtracking với kiểm tra trước miền giá trị khả thi, 
 ![Backtracking with Forward Checking Demo](assets/fc_backtrack.gif)
 
 
-**So sánh hiệu suất:**  
+#### So sánh hiệu suất
 ![CSP Comparison](assets/csp_compare.png)
 
 **Nhận xét:**  
@@ -237,8 +238,8 @@ Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nh�
 *Q-Learning:* 
 ![Q-Learning Demo](assets/q_learning.gif)
 
-**So sánh hiệu suất:**  
-![RL Comparison](assets/rl_compare.png)
+#### So sánh hiệu suất
+![Reinforcement Learning Comparison](assets/rl_compare.png)
 
 **Nhận xét:**  
 - Cần thời gian huấn luyện dài để hội tụ đến chính sách tối ưu
@@ -246,6 +247,10 @@ Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nh�
 - Có khả năng thích ứng với môi trường thay đổi
 
 ---
+
+### So sánh tổng hợp
+![Execution Time Comparison](assets/time_comparison.png)
+![Path Length Comparison](assets/path_comparison.png)
 
 ## 3. Kết luận
 
