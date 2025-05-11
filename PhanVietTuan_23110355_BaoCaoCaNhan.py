@@ -410,59 +410,258 @@ def and_or_tree_search(start, goal, max_depth=50):
     elapsed_time = time.time() - start_time
     return path if path is not None else None
 
-def generate_belief_states(goal, count=3):
-    """Khởi tạo các trạng thái tin tưởng ngẫu nhiên cho bài toán 8-puzzle"""
-    states = []
-    for _ in range(count):
-        # Khởi tạo một trạng thái ngẫu nhiên
-        tiles = list(range(9))
-        random.shuffle(tiles)
-        state = [[tiles[r*3+c] for c in range(3)] for r in range(3)]
-        states.append(state)
-    return states
-
-def no_observation_search(initial_states, goal, max_depth=15):
-    if not initial_states:
-        return None
-        
-    goal_tuple = tuple(map(tuple, goal))
-    belief_state = {tuple(map(tuple, state)): [] for state in initial_states}
-    visited = set()
+def generate_belief_states_from_observed(observed_state):
+    """
+    Sinh các trạng thái khả dĩ từ trạng thái quan sát một phần.
     
-    for depth in range(max_depth + 1):
-        for state_tuple in belief_state:
-            if state_tuple == goal_tuple:
-                return belief_state[state_tuple]
+    Args:
+        observed_state: Ma trận 3x3 với các ô đã biết và "?" cho các ô chưa biết
+    Returns:
+        Danh sách các trạng thái khả dĩ
+    """
+    # Chuyển đổi ma trận 2D thành danh sách 1D
+    flat_state = [cell for row in observed_state for cell in row]
+    
+    # Tìm vị trí các ô chưa biết
+    unknown_positions = [i for i, cell in enumerate(flat_state) if cell == "?"]
+    
+    # Tìm các giá trị đã biết (trừ ô trống 0)
+    known_values = [cell for cell in flat_state if cell != "?" and isinstance(cell, int)]
+    
+    # Các giá trị còn lại cần được phân bổ
+    unknown_values = [i for i in range(9) if i not in known_values]
+    
+    from itertools import permutations
+    belief_states = []
+    
+    # Sinh tất cả các hoán vị của các giá trị chưa biết
+    print(f"Generating {len(list(permutations(unknown_values)))} possible belief states...")
+    
+    for perm in permutations(unknown_values):
+        new_state = flat_state.copy()
+        for idx, val in zip(unknown_positions, perm):
+            new_state[idx] = val
         
-        if depth == max_depth:
-            break
-            
-        new_belief_state = {}
-        
-        for state_tuple, path in belief_state.items():
-            if state_tuple in visited:
-                continue
-                
-            visited.add(state_tuple)
-            state = [list(row) for row in state_tuple]
-            
-            r, c = next((r, c) for r in range(3) for c in range(3) if state[r][c] == 0)
-            
-            for nr, nc in [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]:
-                if 0 <= nr < 3 and 0 <= nc < 3:
-                    new_state = [row[:] for row in state]
-                    new_state[r][c], new_state[nr][nc] = new_state[nr][nc], new_state[r][c]
-                    new_state_tuple = tuple(map(tuple, new_state))
-                    
-                    if new_state_tuple not in visited:
-                        new_path = path + [(nr, nc)]
-                        new_belief_state[new_state_tuple] = new_path
-        
-        belief_state = new_belief_state
-        
-        if not belief_state:
-            break
+        # Chuyển đổi lại thành ma trận 3x3
+        matrix_state = [new_state[i:i+3] for i in range(0, 9, 3)]
+        belief_states.append(matrix_state)
+    
+    print(f"Generated {len(belief_states)} belief states.")
+    return belief_states
 
+def belief_state_search(belief_states, goal_state, search_algorithm=None):
+    """
+    Tìm kiếm lời giải trong Belief State.
+    
+    Args:
+        belief_states: Danh sách các trạng thái khả dĩ
+        goal_state: Trạng thái mục tiêu
+        search_algorithm: Thuật toán tìm kiếm (mặc định là BFS)
+    Returns:
+        Đường đi từ trạng thái đầu đến trạng thái mục tiêu
+    """
+    if not search_algorithm:
+        search_algorithm = bfs  # Sử dụng BFS làm mặc định
+    
+    print(f"Searching for solution in {len(belief_states)} belief states...")
+    
+    for i, state in enumerate(belief_states):
+        print(f"Checking belief state {i+1}/{len(belief_states)}")
+        print_state(state)
+        
+        # Kiểm tra xem trạng thái này có solvable không
+        if is_solvable(state, goal_state):
+            solution = search_algorithm(state)
+            if solution:
+                print(f"Solution found for belief state {i+1}!")
+                return solution, state
+        else:
+            print("This state is not solvable.")
+    
+    print("No solution found in any belief state.")
+    return None, None
+
+def belief_state_demo():
+    """Demo thuật toán Belief State và in kết quả ra console"""
+    print("\n=== BELIEF STATE SEARCH DEMO ===\n")
+    
+    # Tạo một trạng thái quan sát một phần
+    observed_state, true_state = create_belief_state_puzzle()
+    
+    print("Observed State (partially observable):")
+    print_state(observed_state)
+    
+    print("True State (hidden from algorithm):")
+    print_state(true_state)
+    
+    # Sinh các trạng thái khả dĩ từ trạng thái quan sát một phần
+    belief_states = generate_belief_states_from_observed(observed_state)
+    
+    # Tìm kiếm lời giải trong Belief State
+    solution, solved_state = belief_state_search(belief_states, goal_puzzle, bfs)
+    
+    if solution:
+        print("\n=== SOLUTION FOUND ===")
+        print("Starting from belief state:")
+        print_state(solved_state)
+        
+        print(f"Solution path has {len(solution)} steps:")
+        for i, state in enumerate(solution):
+            print(f"Step {i}:")
+            print_state(state)
+        
+        return solution
+    else:
+        print("No solution found.")
+        return None
+
+def is_solvable(state, goal):
+    """
+    Kiểm tra xem trạng thái có thể giải được không.
+    Sử dụng luật chẵn lẻ của số nghịch thế.
+    """
+    flat_state = [cell for row in state for cell in row if cell != 0]
+    inversions = 0
+    for i in range(len(flat_state)):
+        for j in range(i + 1, len(flat_state)):
+            if flat_state[i] > flat_state[j]:
+                inversions += 1
+    
+    flat_goal = [cell for row in goal for cell in row if cell != 0]
+    goal_inversions = 0
+    for i in range(len(flat_goal)):
+        for j in range(i + 1, len(flat_goal)):
+            if flat_goal[i] > flat_goal[j]:
+                goal_inversions += 1
+    
+    # Trạng thái có thể giải được nếu số nghịch thế có cùng tính chẵn lẻ
+    return inversions % 2 == goal_inversions % 2
+
+def print_state(state):
+    """In trạng thái ra console theo định dạng dễ đọc"""
+    print("-" * 13)
+    for row in state:
+        print("| " + " | ".join(str(cell) if cell != 0 else " " for cell in row) + " |")
+    print("-" * 13)
+
+def create_belief_state_puzzle():
+    """Tạo một trạng thái puzzle với một số ô đã biết và một số ô chưa biết"""
+    # Bắt đầu từ một trạng thái hợp lệ
+    base_state = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
+    
+    # Che một số ô ngẫu nhiên
+    observed_state = [row[:] for row in base_state]
+    num_hidden = random.randint(3, 5)  # Ẩn 3-5 ô
+    
+    flat_indices = [(r, c) for r in range(3) for c in range(3)]
+    hidden_positions = random.sample(flat_indices, num_hidden)
+    
+    for r, c in hidden_positions:
+        observed_state[r][c] = "?"
+    
+    return observed_state, base_state  # Trả về cả trạng thái gốc và trạng thái đã che để kiểm tra
+
+def custom_belief_state_input():
+    """Giao diện để người dùng nhập trạng thái Belief State tùy chỉnh"""
+    popup_width, popup_height = 600, 500
+    popup_surface = pygame.Surface((popup_width, popup_height))
+    popup_rect = popup_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    
+    custom_state = [["?" for _ in range(3)] for _ in range(3)]
+    selected_cell = None
+    
+    running = True
+    tile_size = 80
+    
+    while running:
+        popup_surface.fill((192, 240, 255))
+        pygame.draw.rect(popup_surface, DARK_BLUE, (0, 0, popup_width, popup_height), 5)
+        
+        title = font.render("Create Belief State", True, DARK_BLUE)
+        popup_surface.blit(title, (popup_width // 2 - title.get_width() // 2, 20))
+        
+        info_text = small_font.render("Enter known values (0-8), use '?' for unknown cells", True, DARK_BLUE)
+        popup_surface.blit(info_text, (popup_width // 2 - info_text.get_width() // 2, 70))
+        
+        board_x = (popup_width - (tile_size * 3)) // 2
+        board_y = 120
+
+        for row in range(3):
+            for col in range(3):
+                value = custom_state[row][col]
+                x = board_x + col * tile_size
+                y = board_y + row * tile_size
+                
+                color = (255, 220, 100) if selected_cell == (row, col) else (12, 180, 178)
+                pygame.draw.rect(popup_surface, color, (x + 5, y + 5, tile_size - 10, tile_size - 10))
+                pygame.draw.rect(popup_surface, (0, 0, 0), (x + 5, y + 5, tile_size - 10, tile_size - 10), 3)
+                
+                if value != "?":
+                    text = font.render(str(value), True, WHITE)
+                else:
+                    text = font.render("?", True, WHITE)
+                
+                text_rect = text.get_rect(center=(x + tile_size // 2, y + tile_size // 2))
+                popup_surface.blit(text, text_rect)
+
+        apply_button = pygame.Rect(popup_width // 2 - 100, popup_height - 80, 200, 40)
+        pygame.draw.rect(popup_surface, (100, 200, 100), apply_button)
+        pygame.draw.rect(popup_surface, DARK_BLUE, apply_button, 2)
+        
+        apply_text = font.render("Apply", True, WHITE)
+        popup_surface.blit(apply_text, (apply_button.centerx - apply_text.get_width() // 2,
+                                      apply_button.centery - apply_text.get_height() // 2))
+        
+        screen.blit(popup_surface, popup_rect)
+        pygame.display.flip()
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                x -= popup_rect.left
+                y -= popup_rect.top
+
+                for row in range(3):
+                    for col in range(3):
+                        tile_x = board_x + col * tile_size + 5
+                        tile_y = board_y + row * tile_size + 5
+                        
+                        if (tile_x <= x <= tile_x + tile_size - 10 and 
+                            tile_y <= y <= tile_y + tile_size - 10):
+                            selected_cell = (row, col)
+                            break
+                
+                # Kiểm tra nút apply
+                if apply_button.collidepoint(x, y):
+                    # Kiểm tra xem có đủ ô đã biết không 
+                    known_count = sum(1 for row in custom_state for cell in row if cell != "?")
+                    if known_count >= 3:
+                        return custom_state
+                
+            elif event.type == pygame.KEYDOWN:
+                if selected_cell:
+                    row, col = selected_cell
+                    if event.key == pygame.K_QUESTION or event.key == pygame.K_q:
+                        custom_state[row][col] = "?"
+                    elif pygame.K_0 <= event.key <= pygame.K_8:
+                        value = event.key - pygame.K_0
+                        
+                        is_used = False
+                        for r in range(3):
+                            for c in range(3):
+                                if (r, c) != selected_cell and custom_state[r][c] == value:
+                                    is_used = True
+                                    break
+                                    
+                        if not is_used:
+                            custom_state[row][col] = value
+                    elif event.key == pygame.K_ESCAPE:
+                        return None
+    
     return None
 
 def partially_observable_search(start, goal, observation_ratio=0.5, max_iterations=1000):
@@ -477,15 +676,19 @@ def partially_observable_search(start, goal, observation_ratio=0.5, max_iteratio
     Returns:
         Danh sách các bước di chuyển để đạt được trạng thái mục tiêu, hoặc None nếu không tìm thấy
     """
+    # Chuyển đổi trạng thái 2D thành mảng 1D cho dễ xử lý
     flat_state = [start[r][c] for r in range(3) for c in range(3)]
     
-    num_observable = max(1, int(9 * observation_ratio))
+    # Xác định số lượng ô có thể quan sát được
+    num_observable = max(3, int(9 * observation_ratio))  # Ít nhất 3 ô để có thể suy luận
     observable_indices = random.sample(range(9), num_observable)
     
+    # Tạo mặt nạ cho các ô quan sát được
     observation_mask = [False] * 9
     for idx in observable_indices:
         observation_mask[idx] = True
     
+    # Tạo trạng thái được quan sát (có các ô "?")
     masked_state = []
     for r in range(3):
         row = []
@@ -497,64 +700,116 @@ def partially_observable_search(start, goal, observation_ratio=0.5, max_iteratio
                 row.append("?")
         masked_state.append(row)
     
-    possible_states = []
+    # In ra trạng thái quan sát được
+    print("\n=== PARTIALLY OBSERVABLE SEARCH ===")
+    print("\nObserved state:")
+    for row in masked_state:
+        print([str(x) if x != "?" else "?" for x in row])
+    
+    # Xác định các giá trị chưa biết
     unknown_positions = [i for i, observed in enumerate(observation_mask) if not observed]
-    unknown_values = []
+    known_values = [flat_state[idx] for idx in observable_indices]
+    unknown_values = [i for i in range(9) if i not in known_values]
     
-    for i in range(9):
-        if i not in [flat_state[idx] for idx in observable_indices]:
-            unknown_values.append(i)
+    print(f"\nVisible tiles: {known_values}")
+    print(f"Hidden tiles: {unknown_values}")
+    print(f"Generating possible states with {len(unknown_values)}! permutations...")
     
+    # Tạo các trạng thái khả thi bằng cách hoán vị các giá trị chưa biết
+    possible_states = []
     from itertools import permutations
     for perm in permutations(unknown_values):
         possible_state = flat_state.copy()
         for pos_idx, val_idx in enumerate(range(len(unknown_positions))):
             possible_state[unknown_positions[pos_idx]] = perm[val_idx]
-        possible_states.append([[possible_state[r*3+c] for c in range(3)] for r in range(3)])
+        
+        # Chuyển đổi mảng 1D thành ma trận 2D
+        state_2d = [[possible_state[r*3+c] for c in range(3)] for r in range(3)]
+        possible_states.append(state_2d)
     
+    print(f"Generated {len(possible_states)} possible states")
+    
+    # Tìm kiếm giải pháp cho mỗi trạng thái khả thi
     solution_path = None
     solution_state = None
-    visited_states = 0
     
-    for possible_start in possible_states:
+    # Duyệt qua các trạng thái khả thi
+    for state_idx, possible_start in enumerate(possible_states):
+        if state_idx % 10 == 0:
+            print(f"Checking state {state_idx+1}/{len(possible_states)}...")
+        
+        # Kiểm tra xem trạng thái này có thể giải được không
+        if not is_solvable(possible_start, goal):
+            continue
+        
+        # Thực hiện BFS cho trạng thái này
         queue = deque([(possible_start, [])])
         visited = {tuple(map(tuple, possible_start))}
-        visited_states += 1
-        steps_explored = 0
+        iterations = 0
         
-        while queue and steps_explored < max_iterations:
-            state, path = queue.popleft()
-            steps_explored += 1
+        while queue and iterations < max_iterations:
+            iterations += 1
+            current_state, path = queue.popleft()
             
-            if state == goal:
+            # Kiểm tra nếu đạt đến trạng thái mục tiêu
+            if current_state == goal:
                 solution_path = path
                 solution_state = possible_start
                 break
-                
-            r, c = next((r, c) for r in range(3) for c in range(3) if state[r][c] == 0)
             
-            for nr, nc in [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]:
+            # Tìm vị trí ô trống (0)
+            r, c = None, None
+            for i in range(3):
+                for j in range(3):
+                    if current_state[i][j] == 0:
+                        r, c = i, j
+                        break
+                if r is not None:
+                    break
+            
+            # Tạo các trạng thái kế tiếp bằng cách di chuyển ô trống
+            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nr, nc = r + dr, c + dc
                 if 0 <= nr < 3 and 0 <= nc < 3:
-                    new_state = [row[:] for row in state]
+                    # Tạo trạng thái mới sau khi di chuyển
+                    new_state = [row[:] for row in current_state]
                     new_state[r][c], new_state[nr][nc] = new_state[nr][nc], new_state[r][c]
-                    new_tuple = tuple(map(tuple, new_state))
                     
-                    if new_tuple not in visited:
+                    # Kiểm tra nếu trạng thái mới chưa được thăm
+                    state_tuple = tuple(map(tuple, new_state))
+                    if state_tuple not in visited:
+                        # Lưu lại các bước di chuyển để tái tạo đường đi
                         queue.append((new_state, path + [(nr, nc)]))
-                        visited.add(new_tuple)
-                        visited_states += 1
-                        
+                        visited.add(state_tuple)
+        
+        # Nếu đã tìm thấy giải pháp, không cần kiểm tra thêm
         if solution_path:
+            print(f"Solution found for possible state {state_idx+1}!")
             break
     
-    return solution_path
+    if solution_path:
+        print(f"Solution has {len(solution_path)} steps")
+        return solution_path
+    else:
+        print("No solution found in any possible state")
+        return None
 
 """CSPs SEARCH ALGORITHMS"""
-def min_conflicts(start, goal, max_steps=500, use_random_start=True):
+def min_conflicts(start, goal, max_steps=1000, max_restarts=5):
     """
-    Min-Conflicts algorithm for 8-puzzle (CSPs style).
-    Returns a list of states from start to goal, or None if not found.
+    Min-Conflicts algorithm ứng dụng cho 8-puzzle theo đúng triết lý của CSPs.
+    
+    Args:
+        start: Trạng thái bắt đầu
+        goal: Trạng thái mục tiêu
+        max_steps: Số bước tối đa cho mỗi lần khởi động
+        max_restarts: Số lần khởi động lại tối đa
+    
+    Returns:
+        Danh sách các trạng thái từ bắt đầu đến đích, hoặc None nếu không tìm thấy
     """
+    print("\n=== MIN CONFLICTS SEARCH ===")
+    
     def is_solvable(state):
         flat = [cell for row in state for cell in row if cell != 0]
         inv = 0
@@ -571,115 +826,153 @@ def min_conflicts(start, goal, max_steps=500, use_random_start=True):
                     goal_inv += 1
         return inv % 2 == goal_inv % 2
 
-    def manhattan(state):
+    def get_conflicts(state):
+        """Tính số xung đột của mỗi ô (khoảng cách Manhattan từ vị trí hiện tại đến vị trí đích)"""
         goal_pos = {goal[r][c]: (r, c) for r in range(3) for c in range(3)}
-        dist = 0
+        conflicts = {}
         for r in range(3):
             for c in range(3):
                 v = state[r][c]
                 if v != 0:
                     gr, gc = goal_pos[v]
-                    dist += abs(r - gr) + abs(c - gc)
-        return dist
-
-    def get_neighbors(state):
+                    conflicts[(r, c)] = abs(r - gr) + abs(c - gc)
+        return conflicts
+    
+    def total_conflicts(state):
+        """Tổng số xung đột trong trạng thái hiện tại"""
+        return sum(get_conflicts(state).values())
+    
+    def get_possible_moves(state):
+        """Lấy tất cả các bước di chuyển có thể từ vị trí ô trống"""
         r0, c0 = next((r, c) for r in range(3) for c in range(3) if state[r][c] == 0)
-        neighbors = []
-        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
-            nr, nc = r0+dr, c0+dc
-            if 0<=nr<3 and 0<=nc<3:
-                new_state = [row[:] for row in state]
-                new_state[r0][c0], new_state[nr][nc] = new_state[nr][nc], new_state[r0][c0]
-                neighbors.append(new_state)
-        return neighbors
-
-    def random_state():
-        while True:
-            flat = list(range(9))
-            random.shuffle(flat)
-            s = [flat[i*3:(i+1)*3] for i in range(3)]
-            if is_solvable(s):
-                return s
+        moves = []
+        for dr, dc in [(-1,0), (1,0), (0,-1), (0,1)]:
+            nr, nc = r0 + dr, c0 + dc
+            if 0 <= nr < 3 and 0 <= nc < 3:
+                moves.append((nr, nc))
+        return r0, c0, moves
+    
+    def choose_min_conflicts_move(state, blank_r, blank_c, possible_moves):
+        """Chọn bước di chuyển giúp giảm thiểu xung đột nhất"""
+        current_total = total_conflicts(state)
+        min_conflict_moves = []
+        min_conflict_value = float('inf')
+        
+        for move_r, move_c in possible_moves:
+            # Tạo trạng thái mới bằng cách di chuyển ô trống
+            new_state = [row[:] for row in state]
+            new_state[blank_r][blank_c], new_state[move_r][move_c] = new_state[move_r][move_c], new_state[blank_r][blank_c]
+            
+            # Tính tổng xung đột mới
+            new_conflict = total_conflicts(new_state)
+            
+            if new_conflict < min_conflict_value:
+                min_conflict_value = new_conflict
+                min_conflict_moves = [(move_r, move_c, new_state)]
+            elif new_conflict == min_conflict_value:
+                min_conflict_moves.append((move_r, move_c, new_state))
+        
+        # Đảm bảo chỉ chọn những bước làm giảm xung đột
+        improving_moves = [m for m in min_conflict_moves if min_conflict_value < current_total]
+        if improving_moves:
+            return random.choice(improving_moves)
+        
+        # Nếu không có bước nào giảm xung đột, chọn ngẫu nhiên từ các bước tốt nhất
+        return random.choice(min_conflict_moves)
+    
+    def find_path(start_state, end_state, max_length=100):
+        """Tìm đường đi từ start_state đến end_state sử dụng A*"""
+        if start_state == end_state:
+            return [start_state]
+        
+        open_set = [(total_conflicts(start_state), 0, start_state, [])]
+        visited = {tuple(map(tuple, start_state))}
+        
+        while open_set and len(open_set) < 10000:
+            _, g_cost, current, path = heapq.heappop(open_set)
+            
+            if current == end_state or g_cost >= max_length:
+                return path + [current]
+            
+            r0, c0, possible_moves = get_possible_moves(current)
+            for move_r, move_c in possible_moves:
+                new_state = [row[:] for row in current]
+                new_state[r0][c0], new_state[move_r][move_c] = new_state[move_r][move_c], new_state[r0][c0]
                 
-    def random_moves(state, num_moves=3):
-        """Thực hiện một số bước đi ngẫu nhiên từ trạng thái hiện tại"""
-        current = [row[:] for row in state]
-        for _ in range(num_moves):
-            neighbors = get_neighbors(current)
-            if neighbors:
-                current = random.choice(neighbors)
-        return current
-
-    # Start from random or given state
-    current = random_state() if use_random_start else [row[:] for row in start]
-    if not is_solvable(current):
+                state_tuple = tuple(map(tuple, new_state))
+                if state_tuple not in visited:
+                    visited.add(state_tuple)
+                    h_cost = total_conflicts(new_state)
+                    f_cost = g_cost + 1 + h_cost
+                    heapq.heappush(open_set, (f_cost, g_cost + 1, new_state, path + [current]))
+        
+        # Nếu không tìm được đường đi tối ưu, trả về một đường đi cơ bản
+        return [start_state, end_state]
+    
+    if not is_solvable(start):
+        print("Trạng thái ban đầu không thể giải được!")
         return None
-
-    path = [current]
-    visited = set()
     
-    # Ghi nhớ trạng thái tốt nhất đã tìm thấy
-    best_state = current
-    best_dist = manhattan(current)
-    
-    # Biến đếm plateau (khi không có tiến bộ)
-    plateau_count = 0
-    last_dist = best_dist
-
-    for step in range(max_steps):
-        if current == goal:
-            return path
+    for restart in range(max_restarts):
+        print(f"Khởi động lần {restart + 1}/{max_restarts}")
+        
+        # Bắt đầu từ trạng thái đã cho
+        current = [row[:] for row in start]
+        
+        # Theo dõi các trạng thái đã thăm và trạng thái tốt nhất
+        visited = {tuple(map(tuple, current))}
+        best_state = current
+        best_conflicts = total_conflicts(current)
+        
+        # Danh sách lưu các trạng thái đã đi qua
+        intermediate_states = [current]
+        
+        for step in range(max_steps):
+            if step % 100 == 0:
+                print(f"Bước {step}, xung đột: {total_conflicts(current)}")
             
-        visited.add(tuple(tuple(row) for row in current))
-        neighbors = get_neighbors(current)
-        
-        # Min-conflict: pick neighbor with least conflicts (manhattan)
-        min_conf = float('inf')
-        best_neighbors = []
-        
-        for n in neighbors:
-            n_dist = manhattan(n)
-            if n_dist < min_conf:
-                min_conf = n_dist
-                best_neighbors = [n]
-            elif n_dist == min_conf:
-                best_neighbors.append(n)
-        
-        # Chọn ngẫu nhiên từ các lựa chọn tốt nhất
-        next_state = random.choice(best_neighbors)
-        
-        # Tránh chu trình
-        next_tuple = tuple(tuple(row) for row in next_state)
-        if next_tuple in visited:
-            # Thử khởi động lại từ trạng thái tốt nhất với một số bước đi ngẫu nhiên
-            current = random_moves(best_state)
-            path.append(current)
-            visited = {tuple(tuple(row) for row in current)}
-            plateau_count = 0
-            continue
-            
-        # Cập nhật trạng thái tốt nhất nếu cần
-        current_dist = manhattan(next_state)
-        if current_dist < best_dist:
-            best_dist = current_dist
-            best_state = [row[:] for row in next_state]
-            plateau_count = 0
-        elif current_dist == last_dist:
-            plateau_count += 1
-            
-        # Khởi động lại nếu bị kẹt quá lâu
-        if plateau_count > 10:
-            if random.random() < 0.7:  # 70% cơ hội khởi động lại
-                current = random_moves(best_state)
-                path.append(current)
-                visited = {tuple(tuple(row) for row in current)}
-                plateau_count = 0
-                continue
+            # Kiểm tra nếu đạt đến trạng thái mục tiêu
+            if current == goal:
+                print(f"Tìm thấy lời giải sau {step} bước trong lần khởi động {restart + 1}")
                 
-        current = next_state
-        path.append(current)
-        last_dist = current_dist
+                # Tạo đường đi tối ưu từ start đến goal
+                return find_path(start, goal)
+            
+            # Tìm vị trí ô trống và các bước di chuyển có thể
+            blank_r, blank_c, possible_moves = get_possible_moves(current)
+            
+            # Chọn bước di chuyển tốt nhất theo phương pháp Min-Conflicts
+            move_r, move_c, new_state = choose_min_conflicts_move(current, blank_r, blank_c, possible_moves)
+            
+            # Kiểm tra xem trạng thái mới đã từng thăm chưa
+            new_tuple = tuple(map(tuple, new_state))
+            if new_tuple in visited:
+                # Nếu đã thăm quá nhiều trạng thái, thực hiện bước di chuyển ngẫu nhiên
+                if len(visited) > 1000:
+                    r0, c0, moves = get_possible_moves(current)
+                    rand_r, rand_c = random.choice(moves)
+                    tmp_state = [row[:] for row in current]
+                    tmp_state[r0][c0], tmp_state[rand_r][rand_c] = tmp_state[rand_r][rand_c], tmp_state[r0][c0]
+                    current = tmp_state
+                    visited.add(tuple(map(tuple, current)))
+                    intermediate_states.append(current)
+                    continue
+            
+            # Cập nhật trạng thái tốt nhất nếu cần
+            current_conflicts = total_conflicts(new_state)
+            if current_conflicts < best_conflicts:
+                best_conflicts = current_conflicts
+                best_state = new_state
+            
+            # Cập nhật trạng thái hiện tại
+            current = new_state
+            visited.add(new_tuple)
+            intermediate_states.append(current)
         
+        # Nếu không tìm thấy lời giải trong max_steps, thử lần khởi động tiếp theo
+        print(f"Không tìm thấy lời giải sau {max_steps} bước trong lần khởi động {restart + 1}")
+    
+    print("Không tìm thấy lời giải sau tất cả các lần khởi động")
     return None
 
 def backtracking_search(start, max_depth=15):
@@ -1243,243 +1536,6 @@ def show_steps_window(solution):
         pygame.display.flip()
         clock.tick(60)
 
-
-def show_belief_states_popup(goal_puzzle):
-    """Hiển thị cửa sổ chọn trạng thái tin tưởng"""
-    belief_states = generate_belief_states(goal_puzzle, count=3)
-    
-    popup_width, popup_height = 850, 750
-    popup_surface = pygame.Surface((popup_width, popup_height))
-    popup_rect = popup_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-    
-    tile_size = 70
-    state_height = tile_size * 3 + 80
-    scroll_y = 0
-    max_scroll = max(0, len(belief_states) * state_height - (popup_height - 200))
-    
-    dragging = False
-    last_mouse_y = 0
-    selected_state_idx = None
-    custom_state = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
-    editing_custom = False
-    selected_cell = None
-    
-    running = True
-
-    solve_button_rect = pygame.Rect(popup_width - 200, popup_height - 60, 180, 40)
-    close_button_rect = pygame.Rect(popup_width - 90, 10, 70, 30)
-    random_button_rect = pygame.Rect(20, popup_height - 60, 180, 40)
-    custom_button_rect = pygame.Rect(220, popup_height - 60, 180, 40)
-    
-    while running:
-        popup_surface.fill((192, 240, 255))
-
-        pygame.draw.rect(popup_surface, DARK_BLUE, (0, 0, popup_width, popup_height), 5)
-        
-        title = font.render("Select Belief State", True, DARK_BLUE)
-        popup_surface.blit(title, (popup_width // 2 - title.get_width() // 2, 20))
-        
-        info_text = small_font.render("Select one state or use the options below", True, DARK_BLUE)
-        popup_surface.blit(info_text, (20, 60))
-
-        # Vẽ nút close
-        pygame.draw.rect(popup_surface, (200, 50, 50), close_button_rect)
-        pygame.draw.rect(popup_surface, DARK_BLUE, close_button_rect, 2)
-        close_text = small_font.render("Close", True, WHITE)
-        popup_surface.blit(close_text, (close_button_rect.centerx - close_text.get_width() // 2,
-                                       close_button_rect.centery - close_text.get_height() // 2))
-
-        # Vẽ nút solve
-        button_color = (100, 200, 100) if selected_state_idx is not None or editing_custom else (150, 150, 150)
-        pygame.draw.rect(popup_surface, button_color, solve_button_rect)
-        pygame.draw.rect(popup_surface, DARK_BLUE, solve_button_rect, 2)
-        solve_text = font.render("Solve", True, WHITE)
-        popup_surface.blit(solve_text, (solve_button_rect.centerx - solve_text.get_width() // 2,
-                                       solve_button_rect.centery - solve_text.get_height() // 2))
-                                       
-        # Vẽ nút random
-        pygame.draw.rect(popup_surface, (100, 100, 200), random_button_rect)
-        pygame.draw.rect(popup_surface, DARK_BLUE, random_button_rect, 2)
-        random_text = small_font.render("Generate Random", True, WHITE)
-        popup_surface.blit(random_text, (random_button_rect.centerx - random_text.get_width() // 2,
-                                       random_button_rect.centery - random_text.get_height() // 2))
-                                       
-        # Vẽ nút custom
-        custom_color = (36, 217, 227) if editing_custom else (12, 180, 178)
-        pygame.draw.rect(popup_surface, custom_color, custom_button_rect)
-        pygame.draw.rect(popup_surface, DARK_BLUE, custom_button_rect, 2)
-        custom_text = small_font.render("Create Custom", True, WHITE)
-        popup_surface.blit(custom_text, (custom_button_rect.centerx - custom_text.get_width() // 2,
-                                      custom_button_rect.centery - custom_text.get_height() // 2))
-
-        if editing_custom:
-            custom_y = 120
-            custom_text = font.render("Create your own belief state:", True, DARK_BLUE)
-            popup_surface.blit(custom_text, (20, custom_y))
-            
-            custom_y += 50
-            board_x = popup_width // 2 - (tile_size * 3) // 2
-            
-            for row in range(3):
-                for col in range(3):
-                    value = custom_state[row][col]
-                    x = board_x + col * tile_size
-                    y_pos = custom_y + row * tile_size
-                    
-                    if selected_cell == (row, col):
-                        color = (255, 220, 100)
-                    else:
-                        color = (12, 180, 178)
-                        
-                    pygame.draw.rect(popup_surface, color, (x + 5, y_pos + 5, tile_size - 10, tile_size - 10))
-                    pygame.draw.rect(popup_surface, (0, 0, 0), (x + 5, y_pos + 5, tile_size - 10, tile_size - 10), 3)
-                    
-                    if value != 0:
-                        text = font.render(str(value), True, WHITE)
-                        text_rect = text.get_rect(center=(x + tile_size // 2, y_pos + tile_size // 2))
-                        popup_surface.blit(text, text_rect)
-            
-            instr_y = custom_y + 3 * tile_size + 30
-            instr_text = small_font.render("Choose 1 tile and enter a number.", True, DARK_BLUE)
-            popup_surface.blit(instr_text, (20, instr_y))
-            
-        else:
-            for i, state in enumerate(belief_states):
-                y = 120 + i * state_height - scroll_y
-                if y < 100 or y > popup_height - 100:
-                    continue
-
-                radio_rect = pygame.Rect(20, y + tile_size, 20, 20)
-                pygame.draw.rect(popup_surface, WHITE, radio_rect)
-                pygame.draw.rect(popup_surface, DARK_BLUE, radio_rect, 2)
-                
-                if i == selected_state_idx:
-                    pygame.draw.circle(popup_surface, DARK_BLUE, 
-                                    (radio_rect.centerx, radio_rect.centery), 7)
-
-                state_text = small_font.render(f"State {i+1}", True, DARK_BLUE)
-                popup_surface.blit(state_text, (50, y + tile_size))
-
-                board_x = popup_width // 2 - (tile_size * 3) // 2
-                for row in range(3):
-                    for col in range(3):
-                        value = state[row][col]
-                        x = board_x + col * tile_size
-                        y_pos = y + row * tile_size
-                        color = (12, 180, 178)
-                        pygame.draw.rect(popup_surface, color, (x + 5, y_pos + 5, tile_size - 10, tile_size - 10))
-                        pygame.draw.rect(popup_surface, (0, 0, 0), (x + 5, y_pos + 5, tile_size - 10, tile_size - 10), 3)
-                        if value != 0:
-                            text = font.render(str(value), True, WHITE)
-                            text_rect = text.get_rect(center=(x + tile_size // 2, y_pos + tile_size // 2))
-                            popup_surface.blit(text, text_rect)
-
-                pygame.draw.line(popup_surface, (150, 150, 150), 
-                                (20, y + state_height - 30), 
-                                (popup_width - 20, y + state_height - 30), 1)
-
-            if max_scroll > 0:
-                scroll_bar_height = (popup_height - 220) * (popup_height - 220) / (len(belief_states) * state_height)
-                scroll_thumb_y = 100 + (scroll_y / max_scroll) * (popup_height - 220 - scroll_bar_height)
-                pygame.draw.rect(popup_surface, SCROLL_BAR_COLOR, 
-                                (popup_width - SCROLL_BAR_WIDTH - 10, 100, SCROLL_BAR_WIDTH, popup_height - 220))
-                pygame.draw.rect(popup_surface, SCROLL_THUMB_COLOR, 
-                                (popup_width - SCROLL_BAR_WIDTH - 10, scroll_thumb_y, SCROLL_BAR_WIDTH, scroll_bar_height))
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                x, y = event.pos
-                x -= popup_rect.left
-                y -= popup_rect.top
-                
-                if close_button_rect.collidepoint(x, y):
-                    running = False
-                    return None
-                
-                elif solve_button_rect.collidepoint(x, y):
-                    if editing_custom:
-                        flat_custom = [custom_state[r][c] for r in range(3) for c in range(3)]
-                        if sorted(flat_custom) == list(range(9)):
-                            return [custom_state]
-                    elif selected_state_idx is not None:
-                        return [belief_states[selected_state_idx]]
-                
-                elif random_button_rect.collidepoint(x, y):
-                    new_state = generate_belief_states(goal_puzzle, count=1)[0]
-                    return [new_state]
-                    
-                elif custom_button_rect.collidepoint(x, y):
-                    editing_custom = not editing_custom
-                    selected_state_idx = None if editing_custom else selected_state_idx
-                    selected_cell = None
-                
-                elif editing_custom:
-                    board_x = popup_width // 2 - (tile_size * 3) // 2
-                    custom_y = 170
-                    
-                    for row in range(3):
-                        for col in range(3):
-                            tile_x = board_x + col * tile_size
-                            tile_y = custom_y + row * tile_size
-                            
-                            if (tile_x <= x <= tile_x + tile_size and 
-                                tile_y <= y <= tile_y + tile_size):
-                                selected_cell = (row, col)
-                                break
-                
-                elif popup_width - SCROLL_BAR_WIDTH - 10 <= x <= popup_width - 10 and 100 <= y <= popup_height - 120:
-                    dragging = True
-                    last_mouse_y = y
-                
-                else:
-                    for i, state in enumerate(belief_states):
-                        radio_y = 120 + i * state_height - scroll_y + tile_size
-                        radio_rect = pygame.Rect(20, radio_y, 20, 20)
-                        if radio_rect.collidepoint(x, y):
-                            selected_state_idx = i
-                            editing_custom = False
-                            break
-                    
-            elif event.type == pygame.MOUSEBUTTONUP:
-                dragging = False
-                
-            elif event.type == pygame.MOUSEMOTION and dragging:
-                x, y = event.pos
-                y -= popup_rect.top
-                delta_y = y - last_mouse_y
-                scroll_y += delta_y * (max_scroll / (popup_height - 220))
-                scroll_y = max(0, min(scroll_y, max_scroll))
-                last_mouse_y = y
-                
-            elif event.type == pygame.MOUSEWHEEL and not editing_custom:
-                scroll_y -= event.y * 50
-                scroll_y = max(0, min(scroll_y, max_scroll))
-                
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    running = False
-                    return None
-                    
-                if editing_custom and selected_cell is not None:
-                    r, c = selected_cell
-                    if pygame.K_0 <= event.key <= pygame.K_8:
-                        value = event.key - pygame.K_0
-                        
-                        flat_custom = [custom_state[i][j] for i in range(3) for j in range(3) 
-                                     if (i,j) != (r,c)]
-                                     
-                        if value not in flat_custom:
-                            custom_state[r][c] = value
-        
-        screen.blit(popup_surface, popup_rect)
-        pygame.display.flip()
-        clock.tick(60)
-    
-    return None
-
 def show_po_settings_popup():
     """Hiển thị cửa sổ chọn tỷ lệ quan sát"""
     popup_width, popup_height = 500, 400 
@@ -1502,19 +1558,20 @@ def show_po_settings_popup():
         popup_surface.fill((192, 240, 255))
         pygame.draw.rect(popup_surface, DARK_BLUE, (0, 0, popup_width, popup_height), 5)
         
-        title = small_font.render("Partially Observable", True, DARK_BLUE)
+        title = small_font.render("Partially Observable Settings", True, DARK_BLUE)
         popup_surface.blit(title, (popup_width // 2 - title.get_width() // 2, 20))
         
-        info_text = small_font.render("Set the possibility",True, DARK_BLUE)
+        info_text = small_font.render("Set observation percentage - how many tiles are visible", True, DARK_BLUE)
         popup_surface.blit(info_text, (popup_width // 2 - info_text.get_width() // 2, 70))
         
-        # vẽ nút close
+        # Vẽ nút close
         pygame.draw.rect(popup_surface, (200, 50, 50), close_button_rect)
         pygame.draw.rect(popup_surface, DARK_BLUE, close_button_rect, 2)
         close_text = small_font.render("Close", True, WHITE)
         popup_surface.blit(close_text, (close_button_rect.centerx - close_text.get_width() // 2,
                                        close_button_rect.centery - close_text.get_height() // 2))
         
+        # Vẽ thanh trượt
         pygame.draw.rect(popup_surface, (150, 150, 150), 
                         (slider_x, slider_y, slider_width, 10))
         
@@ -1525,6 +1582,7 @@ def show_po_settings_popup():
         value_text = font.render(f"{int(observation_ratio * 100)}%", True, DARK_BLUE)
         popup_surface.blit(value_text, (popup_width // 2 - value_text.get_width() // 2, slider_y + 40))
         
+        # Hiển thị các ví dụ
         example_y = slider_y + 100
         example_tile_size = 30
         
@@ -1554,6 +1612,7 @@ def show_po_settings_popup():
             popup_surface.blit(label, (x_pos + example_tile_size * 1.5 - label.get_width() // 2, 
                                       example_y + example_tile_size * 3 + 15))
         
+        # Vẽ nút Apply
         pygame.draw.rect(popup_surface, (100, 200, 100), apply_button_rect)
         pygame.draw.rect(popup_surface, DARK_BLUE, apply_button_rect, 2)
         apply_text = font.render("Apply", True, WHITE)
@@ -1653,11 +1712,11 @@ def main():
         
         # Complex Environment Search
         "AND-OR": lambda start: path_to_states(start, and_or_tree_search(start, goal_puzzle)),
-        "Belief State": lambda start: None,
+        "Belief State": lambda start: belief_state_demo(),
         "PO": lambda start: None,
         
         # Constraint Satisfaction Problems
-        "MC": lambda start: min_conflicts(start, goal_puzzle, use_random_start=True),
+        "MC": lambda start: min_conflicts(start, goal_puzzle),
         "BACK": backtracking_search,
         "BACK-FC": backtracking_with_forward_checking,
 
@@ -1717,24 +1776,41 @@ def main():
                         # Bắt đầu tính giờ
                         start_time = time.time()
                         # Các thuật toán đặc biệt
+                        # Trong phần try-except khi người dùng nhấn nút "Start"
                         if selected_algorithm == "Belief State":
-                            selected_belief_state = show_belief_states_popup(goal_puzzle)
+                            # Trong console và GUI
+                            print("\n=== BELIEF STATE SEARCH ===\n")
                             
-                            if selected_belief_state is None or len(selected_belief_state) == 0:
-                                no_solution_message = "No belief state selected"
+                            # Hiển thị popup cho phép người dùng tạo trạng thái tùy chỉnh
+                            observed_state = custom_belief_state_input()
+                            
+                            if observed_state is None:
+                                no_solution_message = "Belief state input canceled"
                                 running = False
                                 continue
-                                
-                            belief_state = selected_belief_state[0]
                             
-                            path = no_observation_search([belief_state], goal_puzzle)
-                            solution = path_to_states(belief_state, path) if path else None
+                            print("Observed State:")
+                            print_state(observed_state)
+                            
+                            # Sinh các trạng thái khả dĩ
+                            belief_states = generate_belief_states_from_observed(observed_state)
+                            
+                            # Tìm kiếm lời giải
+                            solution, solved_state = belief_state_search(belief_states, goal_puzzle, bfs)
+                            
+                            if solution:
+                                print("Solution found!")
+                                elapsed_time = time.time() - start_time
+                            else:
+                                no_solution_message = "No solution found for Belief State"
+                                running = False
+                                elapsed_time = time.time() - start_time
                                 
                         elif selected_algorithm == "PO":
                             observation_ratio = show_po_settings_popup()
                             
                             if observation_ratio is None:
-                                no_solution_message = "Possibilities not selected"
+                                no_solution_message = "Observation settings not selected"
                                 running = False
                                 continue
                                 

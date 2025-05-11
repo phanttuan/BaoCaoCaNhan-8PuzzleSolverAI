@@ -14,6 +14,13 @@ def benchmark_algorithms(num_runs=3):
     # Chỉ dùng một test case đơn giản
     test_case = [[1, 2, 3], [4, 0, 6], [7, 5, 8]]  # Trường hợp đơn giản
     
+    # Tạo trạng thái đơn giản cho Belief State và PO
+    def create_simple_belief_state():
+        state = [["?" if (i+j) % 3 == 0 else test_case[i][j] for j in range(3)] for i in range(3)]
+        return state, test_case
+    
+    observed_state, true_state = create_simple_belief_state()
+    
     # Danh sách các thuật toán cần benchmark
     algorithms = {
         # Uninformed Search
@@ -35,14 +42,17 @@ def benchmark_algorithms(num_runs=3):
         "Beam": beam_search,
         "Genetic": genetic_algorithm,
         
-        # Complex Environment Search - Thêm vào 
+        # Complex Environment Search
         "AND-OR": lambda s: path_to_states(s, and_or_tree_search(s, goal_puzzle)),
-        # Belief State và PO là thuật toán tương tác, tạo giá trị đơn giản cho benchmark
-        "Belief State": lambda s: [s, goal_puzzle],  # Giá trị mô phỏng đơn giản
-        "PO": lambda s: [s, goal_puzzle],  # Giá trị mô phỏng đơn giản
+        
+        # Belief State - Benchmark phiên bản đơn giản
+        "Belief State": lambda s: run_belief_state_benchmark(observed_state),
+        
+        # PO - Benchmark phiên bản đơn giản
+        "PO": lambda s: run_po_benchmark(observed_state, 0.5),
         
         # CSPs
-        "MC": lambda s: min_conflicts(s, goal_puzzle, use_random_start=True),
+        "MC": lambda s: min_conflicts(s, goal_puzzle, max_steps=1000, max_restarts=5),
         "BACK": backtracking_search,
         "BACK-FC": backtracking_with_forward_checking,
         
@@ -66,7 +76,13 @@ def benchmark_algorithms(num_runs=3):
         for run in range(num_runs):
             try:
                 start_time = time.time()
-                solution = algo_func(test_case)
+                
+                # Các thuật toán đặc biệt
+                if algo_name in ["Belief State", "PO"]:
+                    solution = algo_func(None)  # Không cần tham số input
+                else:
+                    solution = algo_func(test_case)
+                    
                 end_time = time.time()
                 
                 if solution:
@@ -92,6 +108,118 @@ def benchmark_algorithms(num_runs=3):
     create_charts(results)
     
     return results
+
+def run_belief_state_benchmark(observed_state):
+    """Hàm chạy benchmark đặc biệt cho Belief State"""
+    # Giới hạn số lượng belief states để tránh tiêu tốn quá nhiều thời gian
+    max_belief_states = 10
+    
+    # Tạo một số belief states có giới hạn
+    belief_states = []
+    
+    # Tìm vị trí các ô chưa biết
+    unknown_positions = []
+    for r in range(3):
+        for c in range(3):
+            if observed_state[r][c] == "?":
+                unknown_positions.append((r, c))
+    
+    # Tạo một số cấu hình ngẫu nhiên cho các vị trí không biết
+    missing_values = [v for v in range(9) if all(v != observed_state[r][c] 
+                                             for r in range(3) for c in range(3) 
+                                             if observed_state[r][c] != "?")]
+    
+    # Tạo tối đa 10 belief states
+    import random
+    from itertools import permutations
+    
+    all_permutations = list(permutations(missing_values))
+    if len(all_permutations) > max_belief_states:
+        selected_permutations = random.sample(all_permutations, max_belief_states)
+    else:
+        selected_permutations = all_permutations
+    
+    for perm in selected_permutations:
+        new_state = [row[:] for row in observed_state]
+        for i, (r, c) in enumerate(unknown_positions):
+            if i < len(perm):
+                new_state[r][c] = perm[i]
+        
+        # Chuyển các ô "?" còn lại thành 0 (nếu có)
+        for r in range(3):
+            for c in range(3):
+                if new_state[r][c] == "?":
+                    new_state[r][c] = 0
+                    
+        belief_states.append(new_state)
+    
+    # Tìm kiếm lời giải cho mỗi belief state
+    for state in belief_states:
+        if is_solvable(state, goal_puzzle):
+            # Dùng A* để tìm lời giải
+            solution = astar(state)
+            if solution:
+                return solution
+    
+    # Nếu không tìm thấy lời giải cho bất kỳ belief state nào
+    return None
+
+def run_po_benchmark(observed_state, observation_ratio=0.5):
+    """Hàm chạy benchmark đặc biệt cho Partially Observable"""
+    # Giới hạn số lượng trạng thái có thể sinh ra
+    max_states = 10
+    
+    # Tạo một trạng thái quan sát được đơn giản
+    flat_state = [observed_state[r][c] for r in range(3) for c in range(3)]
+    
+    # Xác định số lượng ô có thể quan sát được
+    num_observable = max(3, int(9 * observation_ratio))
+    
+    # Các vị trí có thể quan sát được
+    unknown_positions = []
+    for r in range(3):
+        for c in range(3):
+            if observed_state[r][c] == "?":
+                unknown_positions.append((r, c))
+    
+    # Các giá trị đã biết
+    known_values = []
+    for r in range(3):
+        for c in range(3):
+            if observed_state[r][c] != "?":
+                known_values.append(observed_state[r][c])
+    
+    # Các giá trị chưa biết
+    unknown_values = [i for i in range(9) if i not in known_values]
+    
+    # Tạo các trạng thái khả thi
+    import random
+    from itertools import permutations
+    
+    all_permutations = list(permutations(unknown_values))
+    if len(all_permutations) > max_states:
+        selected_permutations = random.sample(all_permutations, max_states)
+    else:
+        selected_permutations = all_permutations
+    
+    possible_states = []
+    for perm in selected_permutations:
+        new_state = [row[:] for row in observed_state]
+        for i, (r, c) in enumerate(unknown_positions):
+            if i < len(perm):
+                new_state[r][c] = perm[i]
+        
+        possible_states.append(new_state)
+    
+    # Tìm kiếm giải pháp cho mỗi trạng thái khả thi
+    for state in possible_states:
+        if is_solvable(state, goal_puzzle):
+            # Dùng A* để tìm lời giải
+            solution = astar(state)
+            if solution:
+                return solution
+    
+    return None
 
 def create_charts(results):
     """Tạo các biểu đồ so sánh từ kết quả benchmark"""
@@ -128,7 +256,7 @@ def create_charts(results):
         # Lọc các thuật toán trong nhóm
         filtered_algos = []
         for algo in group_algos:
-            if algo in valid_algos or algo in ["MC", "Belief State", "PO"]:
+            if algo in valid_algos:
                 filtered_algos.append(algo)
         
         if not filtered_algos:
