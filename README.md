@@ -182,7 +182,7 @@ Mô phỏng môi trường chỉ quan sát được một phần trạng thái, 
 ![PO Demo](assets/po.gif)
 
 #### So sánh hiệu suất
-![Complex Environment Comparison](assets/complex_compare.png)
+![CSP Comparison](assets/csp_compare.png)
 
 **Nhận xét:**  
 - **AND-OR:** Phù hợp cho bài toán cần đạt nhiều mục tiêu con
