@@ -58,7 +58,7 @@ algorithms = [
     "AND-OR", "Belief State", "PO", 
     
     # Constraint Satisfaction Problems 
-    "MC", "BACK", 
+    "MC", "BACK", "BACK-FC",
 
     # Reinforcement Learning
     "Q-Learning"
@@ -550,55 +550,137 @@ def partially_observable_search(start, goal, observation_ratio=0.5, max_iteratio
     return solution_path
 
 """CSPs SEARCH ALGORITHMS"""
-def min_conflicts(start, goal, max_steps=1000):
-    if start == goal:
-        return []
-    current_state = [row[:] for row in start]
-    path = []
-    
-    for step in range(max_steps):
-        if current_state == goal:
-            return path
-        conflicts = []
+def min_conflicts(start, goal, max_steps=500, use_random_start=True):
+    """
+    Min-Conflicts algorithm for 8-puzzle (CSPs style).
+    Returns a list of states from start to goal, or None if not found.
+    """
+    def is_solvable(state):
+        flat = [cell for row in state for cell in row if cell != 0]
+        inv = 0
+        for i in range(len(flat)):
+            for j in range(i+1, len(flat)):
+                if flat[i] > flat[j]:
+                    inv += 1
+        # Đảm bảo cùng chẵn lẻ với trạng thái đích
+        goal_flat = [cell for row in goal for cell in row if cell != 0]
+        goal_inv = 0
+        for i in range(len(goal_flat)):
+            for j in range(i+1, len(goal_flat)):
+                if goal_flat[i] > goal_flat[j]:
+                    goal_inv += 1
+        return inv % 2 == goal_inv % 2
+
+    def manhattan(state):
+        goal_pos = {goal[r][c]: (r, c) for r in range(3) for c in range(3)}
+        dist = 0
         for r in range(3):
             for c in range(3):
-                if current_state[r][c] != 0 and current_state[r][c] != goal[r][c]:
-                    conflicts.append((r, c))
-        if not conflicts:
+                v = state[r][c]
+                if v != 0:
+                    gr, gc = goal_pos[v]
+                    dist += abs(r - gr) + abs(c - gc)
+        return dist
+
+    def get_neighbors(state):
+        r0, c0 = next((r, c) for r in range(3) for c in range(3) if state[r][c] == 0)
+        neighbors = []
+        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nr, nc = r0+dr, c0+dc
+            if 0<=nr<3 and 0<=nc<3:
+                new_state = [row[:] for row in state]
+                new_state[r0][c0], new_state[nr][nc] = new_state[nr][nc], new_state[r0][c0]
+                neighbors.append(new_state)
+        return neighbors
+
+    def random_state():
+        while True:
+            flat = list(range(9))
+            random.shuffle(flat)
+            s = [flat[i*3:(i+1)*3] for i in range(3)]
+            if is_solvable(s):
+                return s
+                
+    def random_moves(state, num_moves=3):
+        """Thực hiện một số bước đi ngẫu nhiên từ trạng thái hiện tại"""
+        current = [row[:] for row in state]
+        for _ in range(num_moves):
+            neighbors = get_neighbors(current)
+            if neighbors:
+                current = random.choice(neighbors)
+        return current
+
+    # Start from random or given state
+    current = random_state() if use_random_start else [row[:] for row in start]
+    if not is_solvable(current):
+        return None
+
+    path = [current]
+    visited = set()
+    
+    # Ghi nhớ trạng thái tốt nhất đã tìm thấy
+    best_state = current
+    best_dist = manhattan(current)
+    
+    # Biến đếm plateau (khi không có tiến bộ)
+    plateau_count = 0
+    last_dist = best_dist
+
+    for step in range(max_steps):
+        if current == goal:
             return path
             
-        r, c = next((r, c) for r in range(3) for c in range(3) 
-                    if current_state[r][c] == 0)
-                    
-        possible_moves = []
-        for nr, nc in [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]:
-            if 0 <= nr < 3 and 0 <= nc < 3:
-                possible_moves.append((nr, nc))
-                
-        if not possible_moves:
-            break
-            
-        best_moves = []
-        min_conflicts = float('inf')
+        visited.add(tuple(tuple(row) for row in current))
+        neighbors = get_neighbors(current)
         
-        for nr, nc in possible_moves:
-            new_state = [row[:] for row in current_state]
-            new_state[r][c], new_state[nr][nc] = new_state[nr][nc], new_state[r][c]
-            new_conflicts = sum(1 for i in range(3) for j in range(3)
-                              if new_state[i][j] != 0 and new_state[i][j] != goal[i][j])
-            
-            if new_conflicts < min_conflicts:
-                min_conflicts = new_conflicts
-                best_moves = [(nr, nc)]
-            elif new_conflicts == min_conflicts:
-                best_moves.append((nr, nc))
-                
-        move = random.choice(best_moves)
-        nr, nc = move
-        current_state[r][c], current_state[nr][nc] = current_state[nr][nc], current_state[r][c]
-        path.append((nr, nc))
+        # Min-conflict: pick neighbor with least conflicts (manhattan)
+        min_conf = float('inf')
+        best_neighbors = []
         
-    return []
+        for n in neighbors:
+            n_dist = manhattan(n)
+            if n_dist < min_conf:
+                min_conf = n_dist
+                best_neighbors = [n]
+            elif n_dist == min_conf:
+                best_neighbors.append(n)
+        
+        # Chọn ngẫu nhiên từ các lựa chọn tốt nhất
+        next_state = random.choice(best_neighbors)
+        
+        # Tránh chu trình
+        next_tuple = tuple(tuple(row) for row in next_state)
+        if next_tuple in visited:
+            # Thử khởi động lại từ trạng thái tốt nhất với một số bước đi ngẫu nhiên
+            current = random_moves(best_state)
+            path.append(current)
+            visited = {tuple(tuple(row) for row in current)}
+            plateau_count = 0
+            continue
+            
+        # Cập nhật trạng thái tốt nhất nếu cần
+        current_dist = manhattan(next_state)
+        if current_dist < best_dist:
+            best_dist = current_dist
+            best_state = [row[:] for row in next_state]
+            plateau_count = 0
+        elif current_dist == last_dist:
+            plateau_count += 1
+            
+        # Khởi động lại nếu bị kẹt quá lâu
+        if plateau_count > 10:
+            if random.random() < 0.7:  # 70% cơ hội khởi động lại
+                current = random_moves(best_state)
+                path.append(current)
+                visited = {tuple(tuple(row) for row in current)}
+                plateau_count = 0
+                continue
+                
+        current = next_state
+        path.append(current)
+        last_dist = current_dist
+        
+    return None
 
 def backtracking_search(start, max_depth=15):
     empty_state = [[None for _ in range(3)] for _ in range(3)]
@@ -681,6 +763,123 @@ def backtracking_search(start, max_depth=15):
     
     recursive_backtracking(empty_state, 0)
     return all_states
+
+def backtracking_with_forward_checking(start, max_depth=15):
+    """
+    Giải bài toán 8-puzzle bằng backtracking with forward checking.
+    
+    Args:
+        start: Trạng thái bắt đầu
+        max_depth: Độ sâu tối đa cho tìm kiếm
+        
+    Returns:
+        Một danh sách các trạng thái tạo thành lời giải
+    """
+    empty_state = [[None for _ in range(3)] for _ in range(3)]
+    all_states = []
+    goal = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
+    
+    # Xáo trộn thứ tự duyệt các ô để tạo sự đa dạng
+    cells_order = [(r, c) for r in range(3) for c in range(3)]
+    random.shuffle(cells_order)
+    
+    # Domains là miền giá trị khả thi cho mỗi ô
+    domains = {}
+    for r, c in cells_order:
+        domains[(r, c)] = list(range(9))  # Tất cả giá trị từ 0-8 đều có thể
+    
+    def count_inversions(state):
+        flat = []
+        for i in range(3):
+            for j in range(3):
+                if state[i][j] is not None and state[i][j] != 0:
+                    flat.append(state[i][j])
+                    
+        inversions = 0
+        for i in range(len(flat)):
+            for j in range(i + 1, len(flat)):
+                if flat[i] > flat[j]:
+                    inversions += 1
+        return inversions
+    
+    def is_valid_state(state):
+        filled_count = sum(1 for r in range(3) for c in range(3) if state[r][c] is not None)
+        if filled_count == 8:
+            empty_pos = next((r, c) for r in range(3) for c in range(3) if state[r][c] is None)
+            
+            complete_state = [row[:] for row in state]
+            complete_state[empty_pos[0]][empty_pos[1]] = 0
+            
+            inversions = count_inversions(complete_state)
+            if inversions % 2 != 0:
+                return False
+            
+        return True
+    
+    def update_domains(state, domains, r, c, value):
+        """
+        Cập nhật các miền giá trị sau khi gán giá trị value cho ô (r, c)
+        Trả về các domains đã cập nhật và True nếu tất cả miền vẫn khả thi
+        """
+        new_domains = {pos: list(values) for pos, values in domains.items()}
+        
+        # Xóa giá trị đã được sử dụng khỏi domains của các ô khác
+        for pos in new_domains:
+            if pos != (r, c) and value in new_domains[pos]:
+                new_domains[pos].remove(value)
+                
+            # Nếu một ô không có giá trị khả thi, forward checking thất bại
+            if pos != (r, c) and state[pos[0]][pos[1]] is None and not new_domains[pos]:
+                return new_domains, False
+                
+        return new_domains, True
+    
+    def recursive_backtracking_fc(state, domains, cell_idx):
+        nonlocal all_states
+        
+        # Nếu đã gán giá trị cho tất cả các ô
+        if cell_idx >= len(cells_order):
+            current_display = [[0 if cell is None else cell for cell in row] for row in state]
+            return current_display == goal
+            
+        r, c = cells_order[cell_idx]
+        target_value = goal[r][c]
+        
+        # Ưu tiên giá trị mục tiêu nếu có thể
+        values_to_try = []
+        if target_value in domains[(r, c)]:
+            values_to_try = [target_value]
+        else:
+            values_to_try = domains[(r, c)].copy()
+            random.shuffle(values_to_try)
+        
+        for value in values_to_try:
+            # Gán giá trị cho ô hiện tại
+            state[r][c] = value
+            
+            # Lưu trạng thái hiện tại để hiển thị
+            current_display = [[0 if cell is None else cell for cell in row] for row in state]
+            all_states.append(current_display[:])
+            
+            # Kiểm tra tính hợp lệ của trạng thái
+            if is_valid_state(state):
+                # Forward checking: cập nhật domains
+                new_domains, domains_consistent = update_domains(state, domains, r, c, value)
+                
+                if domains_consistent:
+                    # Tiếp tục backtracking với domains đã cập nhật
+                    if recursive_backtracking_fc(state, new_domains, cell_idx + 1):
+                        return True
+            
+            # Backtrack nếu không tìm thấy lời giải
+            state[r][c] = None
+        
+        return False
+    
+    # Bắt đầu backtracking với forward checking
+    recursive_backtracking_fc(empty_state, domains, 0)
+    return all_states
+
 """REINFORCEMENT LEARNING ALGORITHMS"""
 def state_to_tuple(state):
     """Biên đổi trạng thái từ danh sách 2D sang tuple để sử dụng trong Q-table"""
@@ -876,7 +1075,7 @@ def draw_puzzle(matrix, selected_tile=None):
 
     board_size = 3 * TILE_SIZE
     board_x = (WIDTH - board_size) // 2
-    board_y = HEIGHT // 2 - board_size // 2
+    board_y = HEIGHT // 2 - board_size // 2 + 30
     pygame.draw.rect(screen, (36, 217, 227), (board_x, board_y, board_size, board_size))
 
     for row in range(3):
@@ -1458,8 +1657,9 @@ def main():
         "PO": lambda start: None,
         
         # Constraint Satisfaction Problems
-        "MC": lambda start: path_to_states(start, min_conflicts(start, goal_puzzle)),
+        "MC": lambda start: min_conflicts(start, goal_puzzle, use_random_start=True),
         "BACK": backtracking_search,
+        "BACK-FC": backtracking_with_forward_checking,
 
         # Reinforcement Learning
         "Q-Learning": lambda start: path_to_states(start, q_learning_solve(start, goal_puzzle)[0])
@@ -1511,10 +1711,11 @@ def main():
                 if control_x <= x <= control_x + BUTTON_WIDTH and control_y <= y <= control_y + BUTTON_HEIGHT:
                     running = True
                     paused = False
-                    start_time = time.time()
                     no_solution_message = None
                     
                     try:
+                        # Bắt đầu tính giờ
+                        start_time = time.time()
                         # Các thuật toán đặc biệt
                         if selected_algorithm == "Belief State":
                             selected_belief_state = show_belief_states_popup(goal_puzzle)
@@ -1539,12 +1740,20 @@ def main():
                                 
                             path = partially_observable_search(current_state, goal_puzzle, observation_ratio)
                             solution = path_to_states(current_state, path) if path else None
-                                
-                        else:
+
+                        elif selected_algorithm == "Q-Learning":
+                            path, algo_elapsed_time = q_learning_solve(current_state, goal_puzzle)
+                            solution = path_to_states(current_state, path) if path else None
+                            elapsed_time = algo_elapsed_time
+
+                        # Thuật toán khác
+                        else: 
                             solution = algorithm_map[selected_algorithm](current_state)
-                            
-                        elapsed_time = time.time() - start_time
+                            elapsed_time = time.time() - start_time
                         
+                        if selected_algorithm != "Q-Learning":
+                            elapsed_time = time.time() - start_time
+
                         # Thuật toán backtracking
                         if selected_algorithm == "BACK":
                             if not solution or len(solution) == 0:
