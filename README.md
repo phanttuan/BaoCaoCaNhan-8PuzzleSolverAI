@@ -249,6 +249,7 @@ Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nh�
 ---
 
 ### So sánh tổng hợp
+**Các thuật toán được thực hiện với trạng thái puzzle đơn giản [[1, 2, 3], [4, 0, 6], [7, 5, 8]] nên hiệu suất có thể không được thực tế**
 ![Execution Time Comparison](assets/time_comparison.png)
 ![Path Length Comparison](assets/path_comparison.png)
 
