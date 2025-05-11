@@ -5,17 +5,17 @@ Báo cáo đồ án cá nhân bộ môn Trí Tuệ Nhân Tạo
 
 ---
 ## Mục lục
-- 1. Mục tiêu
-- 2. Nội dung
-  - 2.1 Các thuật toán tìm kiếm không có thông tin
-  - 2.2 Các thuật toán tìm kiếm có thông tin
-  - 2.3 Các thuật toán Local Search
-  - 2.4 Các thuật toán tìm kiếm ở môi trường phức tạp
-  - 2.5 Các thuật toán Constraint Satisfaction Problems (CSPs)
-  - 2.6 Các thuật toán Reinforcement Learning
-- 3. Kết luận
-  - 3.1 Kết quả đạt được
-  - 3.2 Hướng phát triển
+- [1. Mục tiêu](#1-mục-tiêu)
+- [2. Nội dung](#2-nội-dung)
+  - [2.1 Các thuật toán tìm kiếm không có thông tin](#21-các-thuật-toán-tìm-kiếm-không-có-thông-tin)
+  - [2.2 Các thuật toán tìm kiếm có thông tin](#22-các-thuật-toán-tìm-kiếm-có-thông-tin)
+  - [2.3 Các thuật toán Local Search](#23-các-thuật-toán-local-search)
+  - [2.4 Các thuật toán tìm kiếm ở môi trường phức tạp](#24-các-thuật-toán-tìm-kiếm-ở-môi-trường-phức-tạp)
+  - [2.5 Các thuật toán Constraint Satisfaction Problems (CSPs)](#25-các-thuật-toán-constraint-satisfaction-problems-csps)
+  - [2.6 Các thuật toán Reinforcement Learning](#26-các-thuật-toán-reinforcement-learning)
+- [3. Kết luận](#3-kết-luận)
+  - [3.1 Kết quả đạt được](#31-kết-quả-đạt-được)
+  - [3.2 Hướng phát triển](#32-hướng-phát-triển)
 ---
 
 # 1. Mục tiêu
