@@ -68,15 +68,17 @@ Kết hợp BFS và DFS bằng cách chạy DFS với giới hạn độ sâu t�
 <pre>
                             Độ phức tạp thời gian    Độ phức tạp không gian
 BFS                                O(b^d)	                     O(b^d)
-DFS                                O(b^m)	                     O(bm)
-UCS                                O(b^d)	                     O(b^d)
+DFS                                O(n^m )	                   O(bm)
+UCS                                O(b(1 + [C*/ε]))	           O(b^(d + 1))
 ID (Iterative Deepening)           O(b^d)	                     O(bd)
 </pre>
 Trong đó:
-b: Độ phân nhánh trung bình
-d: Độ sâu của lời giải tối ưu.
+b: Số phân nhánh
+d: Độ dài giải pháp tối thiểu của không gian trạng thái đã cho
 m: Độ sâu tối đa của cây tìm kiếm
-N: Số trạng thái trong không gian trạng thái
+n: Số trạng thái trong không gian trạng thái
+C*: Chi phí của giải pháp tối ưu
+ε: là mỗi bước để tiến gần hơn đến nút đích
 
 **GIF minh họa:**  
 *Breadth-First Search*
@@ -116,15 +118,15 @@ Kết hợp A* với iterative deepening, giới hạn giá trị f(n) tăng d�
 <pre>
                             Độ phức tạp thời gian    Độ phức tạp không gian
 Greedy                              O(b^m)	                  O(b^m)
-A*                                  O(b^d)	                  O(b^d)
-IDA*                                O(b^d)	                  O(bd)
+A*                                  O(b^m)	                  O(b^m)
+IDA*                                O(b^d)	                  O(lB)
 </pre>
 
 Trong đó:
-b: Độ phân nhánh trung bình
-d: Độ sâu của lời giải tối ưu.
-m: Độ sâu tối đa của cây tìm kiếm
-N: Số trạng thái trong không gian trạng thái
+b: Số nhánh của cây/đồ thị
+m: Độ sâu của cây/đồ thị khi tìm ra Solution
+l: Chiều dài của path được tạo dài nhất
+B: Số nhánh
 
 **GIF minh họa:**  
 *Greedy Best-First Search:*
