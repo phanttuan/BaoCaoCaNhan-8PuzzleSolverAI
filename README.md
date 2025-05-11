@@ -56,10 +56,10 @@ Thuật toán UCS là một biến thể của BFS nhưng có xét đến chi ph
 ![Uninformed Search Comparison](assets/uninformed_compare.png)
 
 **Nhận xét:**  
-- **BFS:** Đảm bảo tìm lời giải ngắn nhất nhưng tốn bộ nhớ với không gian trạng thái lớn
-- **DFS:** Tiết kiệm bộ nhớ nhưng có thể rơi vào đường đi vô hạn nếu không có kiểm soát
-- **UCS:** Tối ưu về chi phí, thích hợp khi hành động có chi phí khác nhau
-- **ID:** Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ nhưng vẫn đảm bảo tối ưu
+- **BFS:** Đảm bảo tìm lời giải ngắn nhất nhưng tốn bộ nhớ với không gian trạng thái lớn (O(b^d)).
+- **DFS:** Tiết kiệm bộ nhớ (O(bm)) nhưng có thể thăm nhiều trạng thái trùng lặp nếu không dùng tập hợp trạng thái đã thăm.
+- **UCS:** Tương tự BFS, nhưng phù hợp hơn khi chi phí hành động khác nhau.
+- **ID:** Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ nhưng tốn thời gian do kiểm tra lại trạng thái ở độ sâu thấp.
 
 ## 2.2 Các thuật toán tìm kiếm có thông tin
 Nhóm thuật toán tìm kiếm có thông tin (informed search) sử dụng các hàm heuristic để ước lượng chi phí còn lại đến trạng thái đích, giúp quá trình tìm kiếm hiệu quả hơn. Các thuật toán như A*, IDA*, Greedy thường tìm được lời giải nhanh hơn và tối ưu hơn so với các thuật toán không có thông tin, đặc biệt khi heuristic tốt.
@@ -163,9 +163,9 @@ Thuật toán Partially Observable áp dụng cho trường hợp trạng thái 
 ![Complex Environment Comparison](assets/complex_compare.png)
 
 **Nhận xét:**  
-- **AND-OR:** Phù hợp cho bài toán cần đạt nhiều mục tiêu con
-- **Belief State:** Xử lý tốt trường hợp không chắc chắn về trạng thái
-- **PO:** Hiệu suất giảm mạnh khi tỷ lệ quan sát thấp, minh họa thách thức của môi trường thực tế
+- **AND-OR:** Phù hợp khi 8-Puzzle được mở rộng với nhiều mục tiêu phụ, nhưng ít hiệu quả trong trường hợp tiêu chuẩn.
+- **Belief State:** Xử lý tốt trường hợp không chắc chắn về trạng thái, nhưng tăng độ phức tạp tính toán.
+- **PO:** Hiệu suất giảm mạnh khi thông tin quan sát hạn chế, minh họa thách thức của môi trường thực tế.
 
 ## 2.5 Các thuật toán Constraint Satisfaction Problems (CSPs)
 Cách tiếp cận CSP xem 8-puzzle như bài toán gán giá trị cho các biến sao cho thỏa mãn các ràng buộc. Các thuật toán như Backtracking Search, Min-Conflicts Search thường được dùng cho các bài toán như xếp lịch, sudoku, và có thể áp dụng cho 8-Puzzle.
@@ -192,8 +192,8 @@ Thuật toán Backtracking with Forward Checking kết hợp backtracking với 
 ![CSP Comparison](assets/csp_compare.png)
 
 **Nhận xét:**  
-- **Min-Conflicts:** Hiệu quả với CSP lớn, có thể hội tụ nhanh
-- **Backtracking:** Đơn giản nhưng kém hiệu quả với bài toán lớn
+- **Min-Conflicts:** Hiệu quả với CSP lớn, nhưng trong 8-Puzzle có thể không tối ưu do không gian trạng thái nhỏ.
+- **Backtracking:** Đơn giản nhưng kém hiệu quả với bài toán lớn.
 - **Backtracking with Forward Checking:** Cải thiện backtracking bằng cách loại bỏ sớm giá trị không khả thi
 
 ## 2.6 Các thuật toán Reinforcement Learning
@@ -214,7 +214,7 @@ Thuật toán Q-Learning là một phương pháp học tăng cường không c�
 - Có khả năng thích ứng với môi trường thay đổi
 
 ### So sánh tổng hợp
-**Các thuật toán được thực hiện với trạng thái puzzle đơn giản [[1, 2, 3], [4, 0, 6], [7, 5, 8]] nên hiệu suất có thể không được thực tế**
+**Các thuật toán được thử nghiệm với trạng thái khởi đầu [[1, 2, 3], [4, 0, 6], [7, 5, 8]] và một số trạng thái phức tạp hơn (có nhiều phép đảo) để đánh giá hiệu suất thực tế.**
 ![Execution Time Comparison](assets/time_comparison.png)
 ![Path Length Comparison](assets/path_comparison.png)
 
@@ -234,6 +234,7 @@ Kết quả thực nghiệm cho thấy các thuật toán như BFS, UCS, A*, IDA
 ## 3.2 Hướng phát triển
 - Cải thiện hiệu suất của các thuật toán với bảng kích thước lớn hơn (15-puzzle)
 - Thêm các thuật toán học máy hiện đại hơn như Deep Q-Network
+- Phát triển môi trường mô phỏng thách thức hơn (nhiễu, ràng buộc thời gian thực).
 - Phát triển môi trường mô phỏng thách thức hơn (nhiễu, ràng buộc thời gian thực)
 - Tối ưu hóa bộ nhớ và cải thiện hiệu năng
 - Bổ sung các chức năng so sánh, trực quan hóa kết quả chi tiết hơn
