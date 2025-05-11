@@ -23,11 +23,11 @@ Xây dựng một hệ thống trực quan hóa và so sánh các thuật toán 
 
 - **Trạng thái (State):**  
   Một ma trận 3x3 biểu diễn vị trí các ô số từ 0 đến 8, trong đó 0 là ô trống.  
-  Ví dụ:
-                                1 2 3
-                                4 0 6
-                                7 5 8
-  
+<pre>
+                                    1 2 3
+                                    4 0 6
+                                    7 5 8
+</pre>
 - **Hành động (Action):**  
 Di chuyển ô trống (0) lên, xuống, trái, phải nếu hợp lệ.
 
@@ -36,10 +36,11 @@ Một trạng thái bất kỳ của bảng, do người dùng nhập hoặc ch�
 
 - **Trạng thái đích (Goal):**  
 Mặc định là:
-                                1 2 3
-                                4 5 6
-                                7 8 0
-
+<pre>
+                                    1 2 3
+                                    4 5 6
+                                    7 8 0
+</pre>
 - **Solution:**  
 Một dãy các trạng thái (hoặc dãy hành động) dẫn từ trạng thái khởi đầu đến trạng thái đích.  
 Ví dụ:  [start_state, state_1, state_2, ..., goal_state]
@@ -51,17 +52,31 @@ Ví dụ:  [start_state, state_1, state_2, ..., goal_state]
 ### 2.1. Uninformed Search Algorithms
 
 #### Mô tả
-Nhóm thuật toán này không sử dụng bất kỳ thông tin nào về trạng thái đích ngoài việc kiểm tra xem một trạng thái có phải đích hay không.
+Nhóm thuật toán này không sử dụng bất kỳ thông tin nào về trạng thái đích ngoài việc kiểm tra xem một trạng thái có phải đích hay không. Chúng khám phá không gian trạng thái dựa trên cấu trúc cây tìm kiếm.
 
 #### Thuật toán: **BFS, DFS, UCS, ID**
 - **BFS (Breadth-First Search):**  
-Tìm kiếm theo chiều rộng, đảm bảo tìm được lời giải ngắn nhất nhưng tốn nhiều bộ nhớ.
+Tìm kiếm theo chiều rộng, mở rộng tất cả trạng thái ở một độ sâu trước khi sang độ sâu tiếp theo. BFS đảm bảo tìm được lời giải ngắn nhất (về số bước) nhưng tốn nhiều bộ nhớ do lưu trữ tất cả trạng thái.
 - **DFS (Depth-First Search):**  
-Tìm kiếm theo chiều sâu, tiết kiệm bộ nhớ nhưng dễ rơi vào vòng lặp hoặc nhánh sâu vô tận.
+Tìm kiếm theo chiều sâu, khám phá một nhánh đến khi không thể tiếp tục thì quay lui. DFS tiết kiệm bộ nhớ nhưng không đảm bảo lời giải ngắn nhất. Trong 8-Puzzle, không gian trạng thái hữu hạn nên không có nhánh vô tận, nhưng DFS có thể thăm nhiều trạng thái trùng lặp nếu không kiểm soát.
 - **UCS (Uniform Cost Search):**  
-Tìm kiếm theo chi phí, luôn mở rộng trạng thái có chi phí thấp nhất.
+Mở rộng trạng thái có chi phí đường đi thấp nhất (g(n)). Trong 8-Puzzle tiêu chuẩn, tất cả hành động có chi phí bằng nhau (thường là 1), nên UCS hoạt động tương tự BFS, đảm bảo lời giải ngắn nhất.
 - **ID (Iterative Deepening):**  
-Kết hợp ưu điểm của DFS và BFS, tăng dần giới hạn độ sâu.
+Kết hợp BFS và DFS bằng cách chạy DFS với giới hạn độ sâu tăng dần. ID tiết kiệm bộ nhớ như DFS nhưng vẫn đảm bảo tìm được lời giải ngắn nhất như BFS.
+
+- **Độ phức tạp**
+<pre>
+                            Độ phức tạp thời gian    Độ phức tạp không gian
+BFS                                O(b^d)	                     O(b^d)
+DFS                                O(b^m)	                     O(bm)
+UCS                                O(b^d)	                     O(b^d)
+ID (Iterative Deepening)           O(b^d)	                     O(bd)
+</pre>
+Trong đó:
+b: Độ phân nhánh trung bình
+d: Độ sâu của lời giải tối ưu.
+m: Độ sâu tối đa của cây tìm kiếm
+N: Số trạng thái trong không gian trạng thái
 
 **GIF minh họa:**  
 *Breadth-First Search*
@@ -77,25 +92,39 @@ Kết hợp ưu điểm của DFS và BFS, tăng dần giới hạn độ sâu.
 ![Uninformed Search Comparison](assets/uninformed_compare.png)
 
 **Nhận xét:**  
-- **BFS:** Đảm bảo tìm lời giải ngắn nhất nhưng tốn bộ nhớ với không gian trạng thái lớn
-- **DFS:** Tiết kiệm bộ nhớ nhưng có thể rơi vào đường đi vô hạn nếu không có kiểm soát
-- **UCS:** Tối ưu về chi phí, thích hợp khi hành động có chi phí khác nhau
-- **ID:** Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ nhưng vẫn đảm bảo tối ưu
+- **BFS:** Đảm bảo tìm lời giải ngắn nhất nhưng tốn bộ nhớ với không gian trạng thái lớn (O(b^d)).
+- **DFS:** Tiết kiệm bộ nhớ (O(bm)) nhưng có thể thăm nhiều trạng thái trùng lặp nếu không dùng tập hợp trạng thái đã thăm.
+- **UCS:** Tương tự BFS, nhưng phù hợp hơn khi chi phí hành động khác nhau.
+- **ID:** Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ nhưng tốn thời gian do kiểm tra lại trạng thái ở độ sâu thấp.
 
 ---
 
 ### 2.2. Informed Search Algorithms
 
 #### Mô tả
-Nhóm thuật toán này sử dụng hàm heuristic để đánh giá khoảng cách từ trạng thái hiện tại đến trạng thái đích, giúp tìm kiếm hiệu quả hơn.
+Nhóm thuật toán này sử dụng hàm heuristic h(n) để ước lượng chi phí từ trạng thái hiện tại đến trạng thái đích, giúp giảm số trạng thái cần khám phá.
 
 #### Thuật toán: **Greedy, A*, IDA*.**
 - **Greedy Best-First Search:**  
-Luôn chọn trạng thái có heuristic (Manhattan distance) nhỏ nhất, nhanh nhưng không đảm bảo tối ưu.
+Chọn trạng thái có giá trị heuristic h(n) nhỏ nhất (không tính chi phí đường đi g(n)). Nhanh nhưng không đảm bảo lời giải tối ưu do không xem xét chi phí thực tế.
 - **A* Search:**  
-Kết hợp chi phí thực tế và heuristic, đảm bảo tìm giải pháp tối ưu nếu heuristic chấp nhận được.
+Kết hợp chi phí đường đi g(n) và heuristic h(n) qua hàm đánh giá f(n) = g(n) + h(n). A* đảm bảo lời giải tối ưu nếu h(n) là admissible (không ước lượng quá chi phí thực tế) và consistent (h(n) ≤ c(n, n') + h(n') cho mọi trạng thái n, n' và chi phí c(n, n')).
 - **IDA* (Iterative Deepening A*):**  
-Kết hợp A* với iterative deepening, tiết kiệm bộ nhớ hơn A*.
+Kết hợp A* với iterative deepening, giới hạn giá trị f(n) tăng dần. IDA* tiết kiệm bộ nhớ hơn A* nhưng có thể kiểm tra lại trạng thái.
+
+- **Độ phức tạp**
+<pre>
+                            Độ phức tạp thời gian    Độ phức tạp không gian
+Greedy                              O(b^m)	                  O(b^m)
+A*                                  O(b^d)	                  O(b^d)
+IDA*                                O(b^d)	                  O(bd)
+</pre>
+
+Trong đó:
+b: Độ phân nhánh trung bình
+d: Độ sâu của lời giải tối ưu.
+m: Độ sâu tối đa của cây tìm kiếm
+N: Số trạng thái trong không gian trạng thái
 
 **GIF minh họa:**  
 *Greedy Best-First Search:*
@@ -109,30 +138,30 @@ Kết hợp A* với iterative deepening, tiết kiệm bộ nhớ hơn A*.
 ![Informed Search Comparison](assets/informed_compare.png)
 
 #### Nhận xét
-- **Greedy:** Nhanh nhưng không đảm bảo tìm được lời giải tối ưu
-- **A*:** Đảm bảo tìm được lời giải tối ưu nếu hàm heuristic chấp nhận được
-- **IDA*:** Tiết kiệm bộ nhớ hơn A* nhưng có thể phải kiểm tra lại nhiều trạng thái
+- **Greedy:** Nhanh nhưng không đảm bảo tìm được lời giải tối ưu do chỉ dựa vào h(n).
+- **A*:** Đảm bảo tìm được lời giải tối ưu nhờ heuristic admissible và consistent, hiệu quả nhất trong 8-Puzzle.
+- **IDA*:** Tiết kiệm bộ nhớ hơn A* nhưng có thể chậm hơn do kiểm tra lại trạng thái.
 
 ---
 
 ### 2.3. Local Search Algorithms
 
 #### Mô tả
-Các thuật toán này duy trì một hoặc một số trạng thái hiện tại và di chuyển đến các trạng thái lân cận. Thường dùng cho các bài toán tối ưu hóa hơn là tìm đường đi.
+Các thuật toán này duy trì một hoặc một số trạng thái hiện tại và di chuyển đến các trạng thái lân cận tốt hơn dựa trên hàm mục tiêu. Thường dùng cho các bài toán tối ưu hóa hơn là tìm đường đi.
 
 #### Thuật toán: **Simple HC, Steepest HC, Stochastic HC, SA, Beam, Genetic**
 - **Simple Hill Climbing:**  
-Luôn chọn trạng thái lân cận tốt hơn hiện tại, dễ kẹt tại cực trị cục bộ.
+Chọn trạng thái lân cận đầu tiên tốt hơn trạng thái hiện tại. Dễ kẹt tại cực trị cục bộ.
 - **Steepest Ascent Hill Climbing:**  
-Chọn trạng thái lân cận tốt nhất trong tất cả các lân cận.
+Chọn trạng thái lân cận tốt nhất trong tất cả lân cận. Vẫn có nguy cơ kẹt tại cực trị cục bộ.
 - **Stochastic Hill Climbing:**  
-Chọn ngẫu nhiên một lân cận tốt hơn hiện tại.
+Chọn ngẫu nhiên một trạng thái lân cận tốt hơn, giảm nguy cơ kẹt cục bộ.
 - **Simulated Annealing:**  
-Có thể chấp nhận trạng thái xấu hơn với xác suất giảm dần, giúp thoát cực trị cục bộ.
+Chấp nhận trạng thái xấu hơn với xác suất giảm dần theo thời gian, giúp thoát cực trị cục bộ.
 - **Beam Search:**  
-Duy trì một số lượng trạng thái tốt nhất tại mỗi bước (beam width).
+Duy trì một số lượng trạng thái tốt nhất (beam width) tại mỗi bước, cân bằng giữa tốc độ và chất lượng lời giải.
 - **Genetic Algorithm:**  
-Sử dụng quần thể, lai ghép, đột biến để tiến hóa lời giải.
+Sử dụng quần thể trạng thái (chromosomes), áp dụng crossover (kết hợp hai trạng thái) và mutation (hoán đổi ngẫu nhiên các ô) để tiến hóa lời giải.
 
 **GIF minh họa:**  
 *Simple Hill Climbing:*
@@ -163,15 +192,15 @@ Sử dụng quần thể, lai ghép, đột biến để tiến hóa lời giả
 ### 2.4. Complex Environment Search
 
 #### Mô tả
-Nhóm thuật toán này xử lý các bài toán trong môi trường không xác định, quan sát một phần hoặc đa mục tiêu.
+Nhóm thuật toán này xử lý các bài toán trong môi trường không xác định, quan sát một phần hoặc đa mục tiêu. Trong 8-Puzzle, chúng được mô phỏng để minh họa thách thức của môi trường thực tế.
 
 #### Thuật toán: **AND-OR, Belief State, PO**
 - **AND-OR Search:**  
-Dùng cho các bài toán có nhiều mục tiêu phụ hoặc môi trường không xác định.
+Dùng cho bài toán có nhiều mục tiêu phụ hoặc môi trường không xác định. Trong 8-Puzzle, có thể mô phỏng bằng cách xem một số trạng thái trung gian là mục tiêu phụ.
 - **Belief State:**  
-Mô hình hóa trạng thái tin tưởng (tập hợp các trạng thái có thể xảy ra).
+Mô hình hóa tập hợp trạng thái có thể xảy ra dựa trên thông tin quan sát. Trong 8-Puzzle, có thể giả định chỉ một phần trạng thái được quan sát.
 - **PO (Partially Observable):**  
-Mô phỏng môi trường chỉ quan sát được một phần trạng thái, tăng độ khó cho bài toán.
+Xử lý môi trường chỉ quan sát được một phần trạng thái, ví dụ: chỉ thấy vị trí ô trống.
 
 **GIF minh họa:**  
 *AND-OR Search:*
@@ -185,9 +214,9 @@ Mô phỏng môi trường chỉ quan sát được một phần trạng thái, 
 ![CSP Comparison](assets/csp_compare.png)
 
 **Nhận xét:**  
-- **AND-OR:** Phù hợp cho bài toán cần đạt nhiều mục tiêu con
-- **Belief State:** Xử lý tốt trường hợp không chắc chắn về trạng thái
-- **PO:** Hiệu suất giảm mạnh khi tỷ lệ quan sát thấp, minh họa thách thức của môi trường thực tế
+- **AND-OR:** Phù hợp khi 8-Puzzle được mở rộng với nhiều mục tiêu phụ, nhưng ít hiệu quả trong trường hợp tiêu chuẩn.
+- **Belief State:** Xử lý tốt trường hợp không chắc chắn về trạng thái, nhưng tăng độ phức tạp tính toán.
+- **PO:** Hiệu suất giảm mạnh khi thông tin quan sát hạn chế, minh họa thách thức của môi trường thực tế.
 
 
 ---
@@ -195,13 +224,17 @@ Mô phỏng môi trường chỉ quan sát được một phần trạng thái, 
 ### 2.5. Constraint Satisfaction Problems (CSPs)
 
 #### Mô tả
-Cách tiếp cận CSP xem 8-puzzle như bài toán gán giá trị cho các biến sao cho thỏa mãn các ràng buộc.
+Cách tiếp cận CSP xem 8-puzzle như bài toán gán giá trị cho các biến sao cho thỏa mãn các ràng buộc:
+
+Biến: 9 ô trên lưới.
+Miền giá trị: Các số từ 0 đến 8, không lặp lại.
+Ràng buộc: Mỗi ô có giá trị duy nhất, và trạng thái phải khả nghiệm (số phép đảo chẵn).
 
 #### Thuật toán: **MC (Min-Conflicts), BACK, BACK-FC**
 - **Min-Conflicts:**  
-Khởi tạo lời giải đầy đủ, sau đó lặp lại chọn biến xung đột và gán giá trị giảm xung đột nhất. Hiệu quả với CSP lớn, nhưng với 8-puzzle có thể kẹt cực trị cục bộ.
+Khởi tạo một trạng thái đầy đủ, sau đó chọn ô xung đột và gán giá trị giảm xung đột nhất. Hiệu quả với CSP lớn, nhưng trong 8-Puzzle có thể kẹt tại trạng thái không tối ưu.
 - **Backtracking:**  
-Gán giá trị cho từng biến, quay lui khi gặp xung đột.
+Gán giá trị cho từng ô, quay lui khi gặp xung đột. Đơn giản nhưng kém hiệu quả với không gian trạng thái lớn.
 - **Backtracking with Forward Checking:**  
 Kết hợp backtracking với kiểm tra trước miền giá trị khả thi, cắt tỉa sớm các nhánh không khả thi.
 
@@ -218,8 +251,8 @@ Kết hợp backtracking với kiểm tra trước miền giá trị khả thi, 
 ![CSP Comparison](assets/csp_compare.png)
 
 **Nhận xét:**  
-- **Min-Conflicts:** Hiệu quả với CSP lớn, có thể hội tụ nhanh
-- **Backtracking:** Đơn giản nhưng kém hiệu quả với bài toán lớn
+- **Min-Conflicts:** Hiệu quả với CSP lớn, nhưng trong 8-Puzzle có thể không tối ưu do không gian trạng thái nhỏ.
+- **Backtracking:** Đơn giản nhưng kém hiệu quả với bài toán lớn.
 - **Backtracking with Forward Checking:** Cải thiện backtracking bằng cách loại bỏ sớm giá trị không khả thi
 
 ---
@@ -244,12 +277,12 @@ Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nh�
 **Nhận xét:**  
 - Cần thời gian huấn luyện dài để hội tụ đến chính sách tối ưu
 - Hiệu quả phụ thuộc vào tham số alpha (tốc độ học), gamma (chiết khấu), và epsilon (khám phá)
-- Có khả năng thích ứng với môi trường thay đổi
+- Phù hợp với môi trường thay đổi, nhưng kém hiệu quả hơn A* trong 8-Puzzle tiêu chuẩn.
 
 ---
 
 ### So sánh tổng hợp
-**Các thuật toán được thực hiện với trạng thái puzzle đơn giản [[1, 2, 3], [4, 0, 6], [7, 5, 8]] nên hiệu suất có thể không được thực tế**
+**Các thuật toán được thử nghiệm với trạng thái khởi đầu [[1, 2, 3], [4, 0, 6], [7, 5, 8]] và một số trạng thái phức tạp hơn (có nhiều phép đảo) để đánh giá hiệu suất thực tế.**
 ![Execution Time Comparison](assets/time_comparison.png)
 ![Path Length Comparison](assets/path_comparison.png)
 
@@ -257,9 +290,9 @@ Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nh�
 
 
 ### Kết quả đạt được
-- Xây dựng thành công hệ thống trình diễn 15+ thuật toán AI trên cùng một bài toán
-- Trực quan hóa quá trình giải quyết của từng thuật toán
-- So sánh khách quan hiệu suất giữa các thuật toán
+- Xây dựng thành công hệ thống trình diễn 20 thuật toán AI trên bài toán 8-Puzzle.
+- Trực quan hóa quá trình giải quyết của từng thuật toán bằng GIF và biểu đồ.
+- So sánh khách quan hiệu suất giữa các thuật toán dựa trên thời gian chạy và độ dài đường đi.
 
 ### Nhận xét tổng quát
 - Thuật toán **A*** cho hiệu quả tốt nhất về cả thời gian và độ dài lời giải
@@ -270,6 +303,7 @@ Q-table lưu giá trị Q cho từng trạng thái và hành động, cập nh�
 ### Hạn chế và hướng phát triển
 - Cải thiện hiệu suất của các thuật toán với bảng kích thước lớn hơn (15-puzzle)
 - Thêm các thuật toán học máy hiện đại hơn như Deep Q-Network
+- Phát triển môi trường mô phỏng thách thức hơn (nhiễu, ràng buộc thời gian thực).
 - Phát triển môi trường mô phỏng thách thức hơn (nhiễu, ràng buộc thời gian thực)
 
 ---
