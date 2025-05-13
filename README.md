@@ -26,7 +26,7 @@ Xây dựng một hệ thống trực quan hóa và so sánh các thuật toán 
 # 2. Nội dung
 
 ## 2.1 Các thuật toán tìm kiếm không có thông tin
-Nhóm thuật toán tìm kiếm không có thông tin (uninformed search) là các phương pháp tìm kiếm không sử dụng bất kỳ thông tin nào về khoảng cách đến trạng thái đích, chỉ dựa vào cấu trúc không gian trạng thái. Các thuật toán này gồm: BFS, DFS, ID, UCS thường đảm bảo tìm được lời giải nếu tồn tại, nhưng có thể tốn nhiều thời gian và bộ nhớ khi không gian trạng thái lớn.
+Nhóm thuật toán tìm kiếm không có thông tin (uninformed search) là các phương pháp tìm kiếm không sử dụng bất kỳ thông tin nào về khoảng cách đến trạng thái đích, chỉ dựa vào cấu trúc không gian trạng thái. Các thuật toán này gồm: BFS, DFS, UCS, ID thường đảm bảo tìm được lời giải nếu tồn tại, nhưng có thể tốn nhiều thời gian và bộ nhớ khi không gian trạng thái lớn.
 
 ### 2.1.1 Thuật toán BFS (Breadth-First Search)
 BFS được dùng để giải bài toán 8-puzzle bằng cách tìm kiếm theo chiều rộng trên không gian trạng thái. Thuật toán duyệt từng lớp các trạng thái, bắt đầu từ trạng thái ban đầu, mở rộng tất cả các trạng thái kề bằng cách di chuyển ô trống (0) lên/xuống/trái/phải. Mỗi trạng thái được lưu cùng đường đi đã thực hiện trong hàng đợi (queue). BFS đảm bảo tìm được lời giải ngắn nhất (ít bước nhất) nếu tồn tại, nhờ sử dụng hàng đợi (queue) và tập hợp các trạng thái đã thăm để tránh lặp lại.
@@ -62,25 +62,25 @@ Thuật toán ID là sự kết hợp giữa DFS và BFS. Ý tưởng là thực
 - **ID:** Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ nhưng tốn thời gian do kiểm tra lại trạng thái ở độ sâu thấp.
 
 ## 2.2 Các thuật toán tìm kiếm có thông tin
-Nhóm thuật toán tìm kiếm có thông tin (informed search) sử dụng các hàm heuristic để ước lượng chi phí còn lại đến trạng thái đích, giúp quá trình tìm kiếm hiệu quả hơn. Các thuật toán như A*, IDA*, Greedy thường tìm được lời giải nhanh hơn và tối ưu hơn so với các thuật toán không có thông tin, đặc biệt khi heuristic tốt.
+Nhóm thuật toán tìm kiếm có thông tin (informed search) sử dụng các hàm heuristic để ước lượng chi phí còn lại đến trạng thái đích, giúp quá trình tìm kiếm hiệu quả hơn. Các thuật toán như A*, IDA*, Greedy thường tìm được lời giải nhanh hơn và tối ưu hơn so với các thuật toán không có thông tin, đặc biệt khi hàm heuristic hiệu quả.
 
-### 2.2.1 Thuật toán Greedy Best-First Search
-Thuật toán Greedy (tìm kiếm tham lam) sử dụng giá trị heuristic để quyết định mở rộng trạng thái nào tiếp theo, mà không quan tâm đến chi phí đã đi. Trong 8-Puzzle, heuristic thường dùng là tổng khoảng cách Manhattan của các ô về đúng vị trí. Greedy luôn chọn trạng thái có heuristic nhỏ nhất để mở rộng trước, với mục tiêu tiến nhanh nhất về đích.
-
-**Gif minh họa:**  
-![Greedy Demo](assets/greedy.gif)
-
-### 2.2.2 Thuật toán A* Search
-Thuật toán A* là thuật toán tìm kiếm có thông tin, kết hợp giữa chi phí thực (g) từ trạng thái ban đầu đến trạng thái hiện tại và giá trị heuristic (h) ước lượng chi phí còn lại đến đích. A* sử dụng hàng đợi ưu tiên, luôn mở rộng trạng thái có tổng chi phí f = g + h nhỏ nhất. Nhờ đó, A* thường tìm được lời giải ngắn nhất với tốc độ nhanh hơn BFS/UCS khi heuristic tốt.
+### 2.2.1 Thuật toán A* Search
+Thuật toán A* là thuật toán tìm kiếm có thông tin, kết hợp giữa chi phí thực (g) từ trạng thái ban đầu đến trạng thái hiện tại và giá trị heuristic (h) ước lượng chi phí còn lại đến đích. A* sử dụng hàng đợi ưu tiên, luôn mở rộng trạng thái có tổng chi phí f = g + h nhỏ nhất. Nhờ đó, A* thường tìm được lời giải ngắn nhất với tốc độ nhanh hơn BFS/UCS khi heuristic hiệu quả.
 
 **Gif minh họa:**  
 ![A* Demo](assets/a_star.gif)
 
-### 2.2.3 Thuật toán IDA* (Iterative Deepening A*)
+### 2.2.2 Thuật toán IDA* (Iterative Deepening A*)
 Thuật toán IDA* là sự kết hợp giữa A* và tìm kiếm lặp sâu dần. IDA* sử dụng giá trị f = g + h (g là chi phí thực, h là heuristic) làm ngưỡng cắt, sau đó thực hiện tìm kiếm theo chiều sâu nhưng không vượt quá ngưỡng này. Nếu không tìm thấy lời giải, thuật toán sẽ tăng ngưỡng lên giá trị nhỏ nhất lớn hơn ngưỡng cũ và lặp lại quá trình.
 
 **Gif minh họa:**  
 ![IDA* Demo](assets/ida.gif)
+
+### 2.2.3 Thuật toán Greedy Best-First Search
+Thuật toán Greedy (tìm kiếm tham lam) sử dụng giá trị heuristic để quyết định mở rộng trạng thái nào tiếp theo, mà không quan tâm đến chi phí đã đi. Trong 8-Puzzle, heuristic thường dùng là tổng khoảng cách Manhattan của các ô về đúng vị trí. Greedy luôn chọn trạng thái có heuristic nhỏ nhất để mở rộng trước, với mục tiêu tiến nhanh nhất về đích.
+
+**Gif minh họa:**  
+![Greedy Demo](assets/greedy.gif)
 
 ### So sánh hiệu suất của các thuật toán tìm kiếm có thông tin
 ![Informed Search Comparison](assets/informed_compare.png)
@@ -91,22 +91,22 @@ Thuật toán IDA* là sự kết hợp giữa A* và tìm kiếm lặp sâu d�
 - **IDA*:** Tiết kiệm bộ nhớ hơn A* nhưng có thể phải kiểm tra lại nhiều trạng thái
 
 ## 2.3 Các thuật toán Local Search
-Nhóm thuật toán Local Search tập trung vào việc cải thiện dần lời giải hiện tại bằng cách chỉ xét các trạng thái lân cận. Các thuật toán như Beam Search, Hill Climbing, Simulated Annealing, Genetic Algorithm phù hợp cho các bài toán có không gian trạng thái lớn, nhưng có thể bị kẹt ở điểm cực trị cục bộ.
+Nhóm thuật toán tìm kiếm cục bộ (Local Search) tập trung vào việc cải thiện dần lời giải hiện tại bằng cách chỉ xét các trạng thái lân cận. Các thuật toán như Simple  Hill Climbing, Simulated Annealing, Beam Search, Genetic Algorithm phù hợp cho các bài toán có không gian trạng thái lớn, nhưng có thể bị kẹt ở điểm cực trị cục bộ.
 
 ### 2.3.1 Thuật toán Simple Hill Climbing
-Thuật toán Simple Hill Climbing là một phương pháp tìm kiếm địa phương, luôn chọn trạng thái kề có giá trị heuristic tốt hơn hiện tại. Quá trình lặp lại cho đến khi không còn trạng thái nào tốt hơn, khi đó thuật toán có thể mắc kẹt tại điểm cực trị cục bộ. Ưu điểm là thuật toán đơn giản, tốc độ nhanh, nhưng nhược điểm là dễ bị kẹt.
+Thuật toán Simple Hill Climbing là một phương pháp tìm kiếm cục bộ, luôn chọn trạng thái kề có giá trị heuristic tốt hơn hiện tại. Quá trình lặp lại cho đến khi không còn trạng thái nào tốt hơn, khi đó thuật toán có thể mắc kẹt tại điểm cực trị cục bộ. Ưu điểm là thuật toán đơn giản, tốc độ nhanh, nhưng nhược điểm là dễ bị kẹt.
 
 **Gif minh họa:**  
 ![Simple Hill Climbing Demo](assets/simplehc.gif)
 
 ### 2.3.2 Thuật toán Steepest Ascent Hill Climbing
-Thuật toán Steepest Ascent Hill Climbing là một biến thể của Hill Climbing, ở mỗi bước sẽ xét tất cả các trạng thái kề và chọn trạng thái có giá trị heuristic tốt nhất để di chuyển. Quá trình lặp lại cho đến khi không còn trạng thái nào tốt hơn, khi đó thuật toán có thể mắc kẹt tại điểm cực trị cục bộ.
+Thuật toán Steepest Ascent Hill Climbing là một biến thể của Simple Hill Climbing, ở mỗi bước sẽ xét tất cả các trạng thái kề và chọn trạng thái có giá trị heuristic tốt nhất để di chuyển. Quá trình lặp lại cho đến khi không còn trạng thái nào tốt hơn, khi đó thuật toán có thể mắc kẹt tại điểm cực trị cục bộ.
 
 **Gif minh họa:**  
 ![Steepest Ascent Climbing Demo](assets/steepesthc.gif)
 
 ### 2.3.3 Thuật toán Stochastic Hill Climbing
-Thuật toán Stochastic Hill Climbing là một biến thể của Hill Climbing, thay vì luôn chọn trạng thái kề tốt nhất, thuật toán sẽ chọn ngẫu nhiên một trạng thái kề có giá trị heuristic tốt hơn hoặc bằng hiện tại để di chuyển. Quá trình này giúp tránh bị kẹt ở một số điểm cực trị cục bộ.
+Thuật toán Stochastic Hill Climbing là một biến thể của Steepest Hill Climbing, thay vì luôn chọn trạng thái kề tốt nhất, thuật toán sẽ chọn ngẫu nhiên một trạng thái kề có giá trị heuristic tốt hơn hoặc bằng hiện tại để di chuyển. Quá trình này giúp tránh bị kẹt ở một số điểm cực trị cục bộ.
 
 **Gif minh họa:**  
 ![Stochastic Hill Climbing Demo](assets/stochastichc.gif)
@@ -139,7 +139,7 @@ Thuật toán Genetic Algorithm (di truyền) mô phỏng quá trình tiến hó
 - **Genetic Algorithm:** Mạnh mẽ với không gian tìm kiếm lớn, phức tạp, nhưng tốn nhiều tài nguyên
 
 ## 2.4 Các thuật toán tìm kiếm ở môi trường phức tạp
-Nhóm thuật toán này được thiết kế để giải quyết các bài toán trong môi trường không chắc chắn hoặc không quan sát đầy đủ. Các phương pháp như Searching with Partially Observable, AND-OR Search, Belief State Search giúp xử lý các trường hợp trạng thái ban đầu không rõ ràng hoặc có nhiều khả năng xảy ra.
+Nhóm thuật toán này được thiết kế để giải quyết các bài toán trong môi trường không chắc chắn hoặc không quan sát đầy đủ. Các phương pháp như AND-OR Search, Searching with Partially Observable, Belief State Search giúp xử lý các trường hợp trạng thái ban đầu không rõ ràng hoặc có nhiều khả năng xảy ra.
 
 ### 2.4.1 Thuật toán AND-OR Search
 Thuật toán AND-OR Search được sử dụng để giải các bài toán có tính không xác định hoặc môi trường phức tạp, nơi mỗi hành động có thể dẫn đến nhiều kết quả khác nhau. Trong 8-Puzzle, AND-OR Search xây dựng cây tìm kiếm với các nút OR (chọn một hành động) và các nút AND (xét tất cả kết quả có thể của một hành động).
@@ -205,7 +205,7 @@ Thuật toán Backtracking with Forward Checking kết hợp backtracking với 
 - **Backtracking with Forward Checking:** Cải thiện backtracking bằng cách loại bỏ sớm giá trị không khả thi
 
 ## 2.6 Các thuật toán Reinforcement Learning
-Nhóm thuật toán Reinforcement Learning (học tăng cường) giúp tác nhân học cách hành động tối ưu thông qua tương tác với môi trường và nhận phần thưởng.
+Nhóm thuật toán Reinforcement Learning (học tăng cường) giúp agent học cách hành động tối ưu thông qua tương tác với môi trường và nhận phần thưởng.
 
 ### 2.6.1 Thuật toán Q-Learning
 Thuật toán Q-Learning là một phương pháp học tăng cường không cần mô hình môi trường. Trong 8-Puzzle, mỗi trạng thái là một trạng thái của bàn cờ, mỗi hành động là một nước đi hợp lệ của ô trống. Q-Learning sẽ cập nhật bảng Q-value cho từng cặp (trạng thái, hành động) dựa trên phần thưởng nhận được sau mỗi bước đi, với mục tiêu tối đa hóa tổng phần thưởng về sau.
@@ -256,16 +256,13 @@ Thuật toán Q-Learning là một phương pháp học tăng cường không c�
 - Trực quan hóa quá trình giải quyết của từng thuật toán
 - So sánh khách quan hiệu suất giữa các thuật toán
 
-Quá trình thực hiện project đã giúp hiểu rõ hơn về cách hoạt động của nhiều thuật toán trí tuệ nhân tạo khi giải quyết bài toán 8-Puzzle. Đã áp dụng và so sánh các nhóm thuật toán như tìm kiếm không có thông tin, tìm kiếm có thông tin, local search, tìm kiếm trong môi trường phức tạp, constraint satisfaction problems và reinforcement learning trên cùng một bài toán cụ thể.
+Quá trình thực hiện project đã giúp hiểu rõ hơn về cách hoạt động của nhiều thuật toán trí tuệ nhân tạo khi giải quyết bài toán 8-Puzzle. Đã áp dụng và so sánh các nhóm thuật toán như tìm kiếm không có thông tin, tìm kiếm có thông tin, tìm kiếm cục bộ, tìm kiếm trong môi trường phức tạp, trong điều kiện ràng buộc và học tăng cường trên cùng một bài toán cụ thể.
 
-Kết quả thực nghiệm cho thấy các thuật toán như BFS, UCS, A*, IDA* thường tìm được lời giải ngắn nhất và ổn định, trong khi các thuật toán như DFS, Greedy hoặc Hill Climbing có thể cho kết quả nhanh nhưng không phải lúc nào cũng tối ưu.
+Kết quả thực nghiệm cho thấy các thuật toán như BFS, UCS, A*, IDA* thường tìm được lời giải ngắn nhất và ổn định, trong khi các thuật toán như DFS, Greedy hoặc Simple Hill Climbing có thể cho kết quả nhanh nhưng không phải lúc nào cũng tối ưu.
 
 ## 3.2 Hướng phát triển
 - Cải thiện hiệu suất của các thuật toán với bảng kích thước lớn hơn (15-puzzle)
 - Thêm các thuật toán học máy hiện đại hơn như Deep Q-Network
-- Phát triển môi trường mô phỏng thách thức hơn (nhiễu, ràng buộc thời gian thực).
 - Phát triển môi trường mô phỏng thách thức hơn (nhiễu, ràng buộc thời gian thực)
 - Tối ưu hóa bộ nhớ và cải thiện hiệu năng
 - Bổ sung các chức năng so sánh, trực quan hóa kết quả chi tiết hơn
-
-Trong tương lai, project có thể được mở rộng để giải các biến thể lớn hơn như 15-Puzzle hoặc 24-Puzzle nhằm đánh giá hiệu quả của các thuật toán trên không gian trạng thái phức tạp hơn.
