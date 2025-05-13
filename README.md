@@ -19,7 +19,7 @@ Báo cáo đồ án cá nhân bộ môn Trí Tuệ Nhân Tạo
 ---
 
 # 1. Mục tiêu
-Xây dựng một hệ thống trực quan hóa và so sánh các thuật toán AI giải bài toán 8-puzzle, bao gồm các nhóm thuật toán tìm kiếm không có thông tin, tìm kiếm có thông tin, tìm kiếm cục bộ, tìm kiếm ở môi trường phức tạp, tìm kiếm trong điều kiện có ràng buộc và học tăng cường. Dự án giúp sinh viên hiểu rõ bản chất, hiệu suất và ứng dụng của từng thuật toán thông qua giao diện trực quan và các phép đo hiệu suất.
+Xây dựng một hệ thống trực quan hóa và so sánh các thuật toán tìm kiếm giải bài toán 8-puzzle, bao gồm các nhóm thuật toán tìm kiếm không có thông tin, tìm kiếm có thông tin, tìm kiếm cục bộ, tìm kiếm ở môi trường phức tạp, tìm kiếm trong điều kiện có ràng buộc và học tăng cường. Dự án giúp sinh viên hiểu rõ bản chất, hiệu suất và ứng dụng của từng thuật toán thông qua giao diện trực quan và các phép đo hiệu suất.
 
 ---
 
