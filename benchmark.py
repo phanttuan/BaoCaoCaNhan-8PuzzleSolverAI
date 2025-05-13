@@ -584,7 +584,6 @@ def create_belief_state_chart(stats):
     # Đóng tất cả các figure trước
     plt.close('all')
     
-    # FIX: Chiều cao nhỏ hơn để tránh kéo dài
     fig = plt.figure(figsize=(10, 5))
     
     # Dữ liệu
@@ -613,7 +612,7 @@ def create_belief_state_chart(stats):
     # Thêm lưới
     ax.grid(True, linestyle='--', alpha=0.3)
     
-    # FIX: Thay thế tight_layout bằng subplots_adjust
+    # Sử dụng subplots_adjust
     fig.subplots_adjust(bottom=0.15)
     
     fig.savefig('assets/belief_state_benchmark.png', dpi=300, bbox_inches='tight')
@@ -624,7 +623,6 @@ def create_po_chart(stats):
     # Đóng tất cả các figure trước
     plt.close('all')
     
-    # FIX: Chiều cao nhỏ hơn để tránh kéo dài
     fig = plt.figure(figsize=(10, 5))
     
     # Dữ liệu
@@ -653,7 +651,6 @@ def create_po_chart(stats):
     # Thêm lưới
     ax.grid(True, linestyle='--', alpha=0.3)
     
-    # FIX: Thay thế tight_layout bằng subplots_adjust
     fig.subplots_adjust(bottom=0.15)
     
     fig.savefig('assets/po_benchmark.png', dpi=300, bbox_inches='tight')
@@ -664,7 +661,6 @@ def create_andor_chart(stats):
     # Đóng tất cả các figure trước
     plt.close('all')
     
-    # FIX: Chiều cao nhỏ hơn để tránh kéo dài
     fig = plt.figure(figsize=(8, 5))
     
     # Dữ liệu

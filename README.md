@@ -19,17 +19,17 @@ Báo cáo đồ án cá nhân bộ môn Trí Tuệ Nhân Tạo
 ---
 
 # 1. Mục tiêu
-Xây dựng một hệ thống trực quan hóa và so sánh các thuật toán AI giải bài toán 8-puzzle, bao gồm các nhóm thuật toán tìm kiếm, ràng buộc, học tăng cường và môi trường phức tạp. Dự án giúp sinh viên hiểu rõ bản chất, hiệu suất và ứng dụng của từng thuật toán thông qua giao diện trực quan và các phép đo hiệu suất.
+Xây dựng một hệ thống trực quan hóa và so sánh các thuật toán AI giải bài toán 8-puzzle, bao gồm các nhóm thuật toán tìm kiếm không có thông tin, tìm kiếm có thông tin, tìm kiếm cục bộ, tìm kiếm ở môi trường phức tạp, tìm kiếm trong điều kiện có ràng buộc và học tăng cường. Dự án giúp sinh viên hiểu rõ bản chất, hiệu suất và ứng dụng của từng thuật toán thông qua giao diện trực quan và các phép đo hiệu suất.
 
 ---
 
 # 2. Nội dung
 
 ## 2.1 Các thuật toán tìm kiếm không có thông tin
-Nhóm thuật toán tìm kiếm không có thông tin (uninformed search) là các phương pháp tìm kiếm không sử dụng bất kỳ thông tin nào về khoảng cách đến trạng thái đích, chỉ dựa vào cấu trúc không gian trạng thái. Các thuật toán này như BFS, DFS, ID, UCS thường đảm bảo tìm được lời giải nếu tồn tại, nhưng có thể tốn nhiều thời gian và bộ nhớ khi không gian trạng thái lớn.
+Nhóm thuật toán tìm kiếm không có thông tin (uninformed search) là các phương pháp tìm kiếm không sử dụng bất kỳ thông tin nào về khoảng cách đến trạng thái đích, chỉ dựa vào cấu trúc không gian trạng thái. Các thuật toán này gồm: BFS, DFS, ID, UCS thường đảm bảo tìm được lời giải nếu tồn tại, nhưng có thể tốn nhiều thời gian và bộ nhớ khi không gian trạng thái lớn.
 
 ### 2.1.1 Thuật toán BFS (Breadth-First Search)
-BFS được dùng để giải bài toán 8-puzzle bằng cách tìm kiếm theo chiều rộng trên không gian trạng thái. Thuật toán duyệt từng lớp các trạng thái, bắt đầu từ trạng thái ban đầu, mở rộng tất cả các trạng thái kề bằng cách di chuyển ô trống (0) lên/xuống/trái/phải. Mỗi trạng thái được lưu cùng đường đi đã thực hiện. BFS đảm bảo tìm được lời giải ngắn nhất (ít bước nhất) nếu tồn tại, nhờ sử dụng hàng đợi (queue) và tập hợp các trạng thái đã thăm để tránh lặp lại.
+BFS được dùng để giải bài toán 8-puzzle bằng cách tìm kiếm theo chiều rộng trên không gian trạng thái. Thuật toán duyệt từng lớp các trạng thái, bắt đầu từ trạng thái ban đầu, mở rộng tất cả các trạng thái kề bằng cách di chuyển ô trống (0) lên/xuống/trái/phải. Mỗi trạng thái được lưu cùng đường đi đã thực hiện trong hàng đợi (queue). BFS đảm bảo tìm được lời giải ngắn nhất (ít bước nhất) nếu tồn tại, nhờ sử dụng hàng đợi (queue) và tập hợp các trạng thái đã thăm để tránh lặp lại.
 
 **Gif minh họa:**  
 ![BFS Demo](assets/bfs.gif)
@@ -38,16 +38,16 @@ BFS được dùng để giải bài toán 8-puzzle bằng cách tìm kiếm the
 Thuật toán DFS là thuật toán tìm kiếm theo chiều sâu, ưu tiên đi sâu vào từng nhánh trước khi quay lại các nhánh khác. Trong 8-Puzzle, DFS sử dụng stack để lưu các trạng thái, mỗi lần sẽ di chuyển ô trống theo các hướng hợp lệ và tiếp tục mở rộng đến khi gặp trạng thái đích hoặc đạt giới hạn độ sâu. Để tránh lặp vô hạn, thuật toán có kiểm soát độ sâu và đánh dấu trạng thái đã thăm ở từng mức.
 
 **Gif minh họa:**  
-![DFS Demo](assets/dfs.gif)
-
-### 2.1.3 Thuật toán ID (Iterative Deepening)
-Thuật toán ID là sự kết hợp giữa DFS và BFS. Ý tưởng là thực hiện DFS nhiều lần với giới hạn độ sâu tăng dần, bắt đầu từ 0, 1, 2,... cho đến khi tìm thấy lời giải hoặc đạt giới hạn. Ở mỗi lần lặp, thuật toán sẽ tìm kiếm theo chiều sâu nhưng không vượt quá độ sâu hiện tại. Nhờ đó, ID vừa tiết kiệm bộ nhớ như DFS, vừa đảm bảo tìm được lời giải ngắn nhất như BFS.
-
-**Gif minh họa:**  
 ![ID Demo](assets/id.gif)
 
-### 2.1.4 Thuật toán UCS (Uniform Cost Search)
+### 2.1.3 Thuật toán UCS (Uniform Cost Search)
 Thuật toán UCS là một biến thể của BFS nhưng có xét đến chi phí đường đi. UCS sử dụng hàng đợi ưu tiên (priority queue), luôn mở rộng trạng thái có tổng chi phí nhỏ nhất từ trạng thái ban đầu đến trạng thái hiện tại. Trong 8-Puzzle, mỗi bước di chuyển thường có chi phí bằng nhau nên UCS sẽ tìm được lời giải ngắn nhất giống như BFS.
+
+**Gif minh họa:**  
+![DFS Demo](assets/dfs.gif)
+
+### 2.1.4 Thuật toán ID (Iterative Deepening)
+Thuật toán ID là sự kết hợp giữa DFS và BFS. Ý tưởng là thực hiện DFS nhiều lần với giới hạn độ sâu tăng dần, bắt đầu từ 0, 1, 2,... cho đến khi tìm thấy lời giải hoặc đạt giới hạn. Ở mỗi lần lặp, thuật toán sẽ tìm kiếm theo chiều sâu nhưng không vượt quá độ sâu hiện tại. Nhờ đó, ID vừa tiết kiệm bộ nhớ như DFS, vừa đảm bảo tìm được lời giải ngắn nhất như BFS.
 
 **Gif minh họa:**  
 ![UCS Demo](assets/ucs.gif)

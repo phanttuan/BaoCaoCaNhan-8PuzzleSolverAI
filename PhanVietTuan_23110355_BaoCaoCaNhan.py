@@ -40,8 +40,14 @@ small_font = pygame.font.Font(None, 24)
 clock = pygame.time.Clock()
 
 # Khởi tạo puzzle và trạng thái mục tiêu
-start_puzzle = [[1, 2, 3], [4, 0, 6], [7, 5, 8]]
-goal_puzzle = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
+# Trạng thái khởi đầu đơn giản
+start_puzzle = [[1, 2, 3], 
+                [4, 0, 6], 
+                [7, 5, 8]]
+# Trạng thái mục tiêu
+goal_puzzle = [[1, 2, 3], 
+               [4, 5, 6], 
+               [7, 8, 0]]
 
 # Danh sách các thuật toán
 algorithms = [
