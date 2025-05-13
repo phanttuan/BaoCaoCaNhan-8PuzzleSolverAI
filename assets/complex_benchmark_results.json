@@ -1,0 +1,23 @@
+{
+  "Belief State": {
+    "num_states": 6,
+    "num_solved": 3,
+    "success_rate": 0.5,
+    "total_time": 0.011992454528808594,
+    "avg_time": 0.001998742421468099,
+    "avg_steps": 13.0
+  },
+  "PO": {
+    "num_states": 6,
+    "num_solved": 3,
+    "success_rate": 0.5,
+    "total_time": 0.008232355117797852,
+    "avg_time": 0.0013720591862996419,
+    "avg_steps": 13.0
+  },
+  "AND-OR": {
+    "time": 0.0002014636993408203,
+    "steps": 31,
+    "success": true
+  }
+}

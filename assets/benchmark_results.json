@@ -1,102 +1,122 @@
 {
   "BFS": {
-    "time": 9.04401143391927e-05,
+    "time": 8.948644002278645e-05,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "DFS": {
-    "time": 0.06363638242085774,
+    "time": 0.07838575045267741,
     "path_length": 69.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "UCS": {
-    "time": 0.0001277923583984375,
+    "time": 0.00010673205057779948,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "ID": {
-    "time": 6.270408630371094e-05,
+    "time": 3.258387247721354e-05,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "Greedy": {
-    "time": 6.349881490071614e-05,
+    "time": 9.520848592122395e-05,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "A*": {
-    "time": 6.254514058430989e-05,
+    "time": 9.020169576009114e-05,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "IDA*": {
-    "time": 5.3882598876953125e-05,
+    "time": 9.330113728841145e-05,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "Simple HC": {
-    "time": 4.72863515218099e-05,
+    "time": 6.341934204101562e-05,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "Steepest HC": {
-    "time": 5.451838175455729e-05,
+    "time": 8.217493693033855e-05,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "Stochastic HC": {
-    "time": 6.190935770670573e-05,
+    "time": 7.971127827962239e-05,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "SA": {
-    "time": 0.0005748271942138672,
-    "path_length": 65.0,
-    "success": true
+    "time": 0,
+    "path_length": 0,
+    "success": false,
+    "nodes_expanded": 0
   },
   "Beam": {
-    "time": 0.00010140736897786458,
+    "time": 0.00012985865275065103,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "Genetic": {
-    "time": 0.018152634302775066,
+    "time": 0.02010345458984375,
     "path_length": 20.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "AND-OR": {
-    "time": 0.00022101402282714844,
-    "path_length": 31.0,
-    "success": true
+    "time": 0.0002014636993408203,
+    "path_length": 31,
+    "success": true,
+    "nodes_expanded": 0
   },
   "Belief State": {
-    "time": 0.00010593732198079427,
-    "path_length": 3.0,
-    "success": true
+    "time": 0.001998742421468099,
+    "path_length": 13.0,
+    "success": true,
+    "nodes_expanded": 0
   },
   "PO": {
-    "time": 7.049242655436198e-05,
-    "path_length": 3.0,
-    "success": true
+    "time": 0.0013720591862996419,
+    "path_length": 13.0,
+    "success": true,
+    "nodes_expanded": 0
   },
   "MC": {
-    "time": 0.0003246466318766276,
+    "time": 0.0004448095957438151,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "BACK": {
-    "time": 5.8650970458984375e-05,
+    "time": 6.159146626790364e-05,
     "path_length": 9.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "BACK-FC": {
-    "time": 0.00010291735331217448,
+    "time": 0.0001281897226969401,
     "path_length": 9.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   },
   "Q-Learning": {
-    "time": 0.018332958221435547,
+    "time": 0.020285606384277344,
     "path_length": 3.0,
-    "success": true
+    "success": true,
+    "nodes_expanded": 0
   }
 }

@@ -162,6 +162,14 @@ Thuật toán Partially Observable áp dụng cho trường hợp trạng thái 
 ### So sánh hiệu suất của các thuật toán tìm kiếm ở môi trường phức tạp
 ![Complex Environment Comparison](assets/complex_compare.png)
 
+**Hiệu suất chi tiết từng thuật toán:**
+- **Belief State Search:**  
+  ![Belief State Benchmark](assets/belief_state_benchmark.png)
+- **Partially Observable Search:**  
+  ![PO Benchmark](assets/po_benchmark.png)
+- **AND-OR Search:**  
+  ![AND-OR Benchmark](assets/andor_benchmark.png)
+
 **Nhận xét:**  
 - **AND-OR:** Phù hợp khi 8-Puzzle được mở rộng với nhiều mục tiêu phụ, nhưng ít hiệu quả trong trường hợp tiêu chuẩn.
 - **Belief State:** Xử lý tốt trường hợp không chắc chắn về trạng thái, nhưng tăng độ phức tạp tính toán.
@@ -214,9 +222,30 @@ Thuật toán Q-Learning là một phương pháp học tăng cường không c�
 - Có khả năng thích ứng với môi trường thay đổi
 
 ### So sánh tổng hợp
-**Các thuật toán được thử nghiệm với trạng thái khởi đầu [[1, 2, 3], [4, 0, 6], [7, 5, 8]] và một số trạng thái phức tạp hơn (có nhiều phép đảo) để đánh giá hiệu suất thực tế.**
-![Execution Time Comparison](assets/time_comparison.png)
-![Path Length Comparison](assets/path_comparison.png)
+
+**Cách đo benchmark và thu thập số liệu:**  
+Để so sánh hiệu suất giữa các thuật toán, project thực hiện các bước sau:
+
+- **Chọn cùng một trạng thái khởi đầu** cho tất cả các thuật toán ([[1, 2, 3], [4, 0, 6], [7, 5, 8]] hoặc các trạng thái khó hơn).
+- **Chạy từng thuật toán** giải bài toán 8-puzzle với trạng thái này, mỗi thuật toán được thực thi nhiều lần để lấy kết quả trung bình (nếu thuật toán có yếu tố ngẫu nhiên).
+- **Đo thời gian thực thi**: Sử dụng hàm time hoặc datetime để lấy thời gian bắt đầu và kết thúc khi giải xong, tính ra thời gian chạy (tính bằng giây hoặc mili giây).
+- **Đếm số bước đi (path length)**: Đếm số bước di chuyển từ trạng thái đầu đến trạng thái đích trong lời giải tìm được.
+- **Đếm số node mở rộng**: Mỗi lần thuật toán sinh ra một trạng thái mới (mở rộng node), biến đếm sẽ tăng lên. Điều này giúp đánh giá mức độ "tốn công" của thuật toán.
+- **Đo bộ nhớ sử dụng** (nếu có): Một số thuật toán như BFS, A* sẽ lưu lại số lượng trạng thái trong hàng đợi hoặc tập đã thăm, từ đó có thể ước lượng bộ nhớ tiêu thụ.
+- **Tỷ lệ thành công**: Với các thuật toán không đảm bảo hội tụ (ví dụ: Hill Climbing, Genetic), chạy nhiều lần và tính tỷ lệ tìm được lời giải.
+
+
+---
+**Nhờ cách đo benchmark này, project đảm bảo việc so sánh giữa các thuật toán là khách quan, công bằng và có ý nghĩa thực tiễn khi áp dụng vào bài toán 8-puzzle.**
+- **So sánh tổng hợp tất cả thuật toán:**  
+  ![Overall Comparison](assets/overall_comparison.png)
+- **So sánh thời gian thực thi:**  
+  ![Execution Time Comparison](assets/time_comparison.png)
+- **So sánh độ dài đường đi:**  
+  ![Path Length Comparison](assets/path_comparison.png)
+
+
+
 
 ---
 
