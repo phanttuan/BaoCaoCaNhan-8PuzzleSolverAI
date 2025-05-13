@@ -418,11 +418,11 @@ def create_charts(results):
         "rl": ["Q-Learning"]
     }
     group_titles = {
-        "uninformed": "Thuật toán tìm kiếm không hướng dẫn",
-        "informed": "Thuật toán tìm kiếm có hướng dẫn",
+        "uninformed": "Thuật toán tìm kiếm không thông tin",
+        "informed": "Thuật toán tìm kiếm có thông tin",
         "local": "Thuật toán tìm kiếm cục bộ",
         "complex": "Thuật toán tìm kiếm trong môi trường phức tạp",
-        "csp": "Thuật toán CSP",
+        "csp": "Thuật toán tìm kiếm trong điều kiện ràng buộc",
         "rl": "Thuật toán học tăng cường"
     }
     for group_name, group_algos in algorithm_groups.items():

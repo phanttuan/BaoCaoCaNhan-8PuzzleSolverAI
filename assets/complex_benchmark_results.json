@@ -3,20 +3,20 @@
     "num_states": 6,
     "num_solved": 3,
     "success_rate": 0.5,
-    "total_time": 0.011992454528808594,
-    "avg_time": 0.001998742421468099,
+    "total_time": 0.012851238250732422,
+    "avg_time": 0.002141873041788737,
     "avg_steps": 13.0
   },
   "PO": {
     "num_states": 6,
     "num_solved": 3,
     "success_rate": 0.5,
-    "total_time": 0.008232355117797852,
-    "avg_time": 0.0013720591862996419,
+    "total_time": 0.010417461395263672,
+    "avg_time": 0.0017362435658772786,
     "avg_steps": 13.0
   },
   "AND-OR": {
-    "time": 0.0002014636993408203,
+    "time": 0.0003266334533691406,
     "steps": 31,
     "success": true
   }
